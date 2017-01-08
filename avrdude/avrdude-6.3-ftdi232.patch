@@ -1,0 +1,21 @@
+--- avrdude-6.3.orig/avrdude.conf.in
++++ avrdude-6.3/avrdude.conf.in
+@@ -746,6 +746,18 @@
+   reset = 4;  # DTR
+ ;
+ 
++programmer
++  id    = "ftdi232";
++  desc  = "FTDI232: FT232RL Synchronous BitBang";
++  baudrate = 2400;
++  type  = "ftdi_syncbb";
++  connection_type = usb;
++  miso  = 1;  # RX
++  sck   = 0;  # TX
++  mosi  = 4;  # DTR
++  reset = 3;  # CTS
++;
++
+ # see http://www.bitwizard.nl/wiki/index.php/FTDI_ATmega
+ programmer
+   id    = "bwmega";
