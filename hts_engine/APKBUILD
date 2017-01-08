@@ -1,0 +1,39 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer:
+pkgname=hts_engine
+pkgver=1.10
+pkgrel=0
+pkgdesc="HTS Engine API - HMM-based speech synthesis system"
+url="http://hts-engine.sourceforge.net/"
+arch="all"
+license="BSD"
+depends=""
+makedepends=""
+install=""
+subpackages="$pkgname-dev"
+source="http://download.sourceforge.net/hts-engine/hts_engine_API-$pkgver.tar.gz
+	hts_engine_API-1.10.ftell.patch"
+builddir="$srcdir/hts_engine_API-$pkgver"
+
+build() {
+	cd "$builddir"
+	CFLAGS="$CFLAGS -D__FTELL__" \
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		|| return 1
+	make || return 1
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install || return 1
+}
+
+md5sums="5626d1e2522659e93fb295f0b42339f5  hts_engine_API-1.10.tar.gz
+4ecc5685e95dd02c330228feffa50363  hts_engine_API-1.10.ftell.patch"
+sha256sums="e2132be5860d8fb4a460be766454cfd7c3e21cf67b509c48e1804feab14968f7  hts_engine_API-1.10.tar.gz
+c344b4d224e7b6c00e219f958070915f80fc68a7eaa3e3e6049419dcd3a0e84d  hts_engine_API-1.10.ftell.patch"
+sha512sums="fa43bc0a013bfae1392cc5c1195901aae7de50f1866f06d6ec060af5a5740eb2715632561a117d04c98f2863da32fffff05bcaf76ba6ac70e5649ce94dad544b  hts_engine_API-1.10.tar.gz
+3786f0ee622db0ddb3d68585baaba97743b5fe5b931154b3b4e591651e14de23079c2fbbd4e8c83c81708ee9f3a8ccbe49768df15c07280a8d29c33cce39deea  hts_engine_API-1.10.ftell.patch"

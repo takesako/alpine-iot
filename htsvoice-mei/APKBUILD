@@ -1,0 +1,37 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer:
+pkgname=htsvoice-mei
+pkgver=1.7
+pkgrel=0
+pkgdesc="HTS Voice 'mei' released by MMDAgent Project Team"
+url="http://www.mmdagent.jp/"
+arch="noarch"
+license="CC-BY-3.0"
+depends=""
+makedepends=""
+install=""
+subpackages="htsvoice-slt:htsvoice_slt:noarch"
+source="http://downloads.sourceforge.net/mmdagent/MMDAgent_Example-$pkgver.zip"
+builddir="$srcdir/MMDAgent_Example-$pkgver"
+
+build() {
+	cd "$builddir"
+}
+
+package() {
+	cd "$builddir"
+	mkdir -p "$pkgdir"/usr/share/htvoice/mei
+	mv Voice/mei/mei*.htsvoice "$pkgdir"/usr/share/htvoice/mei/
+	mv Voice/mei/COPYRIGHT.txt "$pkgdir"/usr/share/htvoice/mei/
+}
+
+htsvoice_slt() {
+	pkgdesc="HTS Voice 'CMU ARCTIC SLT' released by HTS Working Group"
+	cd "$builddir"
+	mkdir -p "$subpkgdir"/usr/share/htvoice/slt
+	mv Voice/slt/*slt.htsvoice "$subpkgdir"/usr/share/htvoice/slt/
+	mv Voice/slt/COPYRIGHT.txt "$subpkgdir"/usr/share/htvoice/slt/
+}
+md5sums="aadedc866dceb515a1bcebee51ccfa7d  MMDAgent_Example-1.7.zip"
+sha256sums="5b560e8c23c5acaf67688e6e25788db2c0bb230aff0635b7c75a82a87c7f6dba  MMDAgent_Example-1.7.zip"
+sha512sums="5278257c42a12dc5d8dee42001a9aaf56ac6bacbc664d81a159559fc83efdf599dc2c115401509363fbd8b5156bc234a17dffdce4c41d57cb3bcd2b1d8288d04  MMDAgent_Example-1.7.zip"
