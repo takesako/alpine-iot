@@ -1,0 +1,33 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer:
+pkgname=avrdude
+pkgver=6.3
+pkgrel=0
+pkgdesc="AVRDUDE - AVR Downloader/UploaDEr"
+url="http://www.nongnu.org/avrdude/"
+arch="all"
+license="GPL2"
+depends="libftdi1"
+makedepends="m4 flex bison libelf-dev libftdi1-dev libusb-dev"
+install=""
+subpackages="$pkgname-dev $pkgname-doc"
+source="http://download.savannah.gnu.org/releases/avrdude/$pkgname-$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		|| return 1
+	make || return 1
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install || return 1
+}
+
+md5sums="58bb42049122cf80fe4f4d0ce36d92ee  avrdude-6.3.tar.gz"
+sha256sums="0f9f731b6394ca7795b88359689a7fa1fba818c6e1d962513eb28da670e0a196  avrdude-6.3.tar.gz"
+sha512sums="b671008388d6a552e71066fec46429bc7f6639e8eac41113bcbba5a56212b78be31fcf04956b31e11c6b14888b0f6e825f7458395b9ff4fc28406074c7ded2b2  avrdude-6.3.tar.gz"
