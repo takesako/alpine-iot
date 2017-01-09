@@ -2,7 +2,7 @@
 # Maintainer:
 pkgname=avrdude
 pkgver=6.3
-pkgrel=1
+pkgrel=2
 pkgdesc="AVRDUDE - AVR Downloader/UploaDEr"
 url="http://www.nongnu.org/avrdude/"
 arch="all"
@@ -12,7 +12,9 @@ makedepends="m4 flex bison linux-headers libelf-dev libftdi1-dev libusb-dev libu
 install=""
 subpackages="$pkgname-dev $pkgname-doc"
 source="http://download.savannah.gnu.org/releases/avrdude/$pkgname-$pkgver.tar.gz
-	avrdude-6.3-ftdi232.patch"
+	avrdude-6.3-ftdi232.patch
+	avrdude-6.3-libusb_exit.patch
+	"
 builddir="$srcdir/$pkgname-$pkgver"
 
 build() {
@@ -30,8 +32,11 @@ package() {
 }
 
 md5sums="58bb42049122cf80fe4f4d0ce36d92ee  avrdude-6.3.tar.gz
-824c721dff03c7a4d66b28100af45d89  avrdude-6.3-ftdi232.patch"
+824c721dff03c7a4d66b28100af45d89  avrdude-6.3-ftdi232.patch
+58968c073449cefd50b9d4b2d91c002f  avrdude-6.3-libusb_exit.patch"
 sha256sums="0f9f731b6394ca7795b88359689a7fa1fba818c6e1d962513eb28da670e0a196  avrdude-6.3.tar.gz
-98c66b19347ec28bc3b84e8935b39eb69ad6b41d76f671bf118a4e58488cdf15  avrdude-6.3-ftdi232.patch"
+98c66b19347ec28bc3b84e8935b39eb69ad6b41d76f671bf118a4e58488cdf15  avrdude-6.3-ftdi232.patch
+b7022de4faf03fcbe0a78cde13680263b9c0fb4ccfdbb91bbed741cbb793cee3  avrdude-6.3-libusb_exit.patch"
 sha512sums="b671008388d6a552e71066fec46429bc7f6639e8eac41113bcbba5a56212b78be31fcf04956b31e11c6b14888b0f6e825f7458395b9ff4fc28406074c7ded2b2  avrdude-6.3.tar.gz
-028de8faa6ca61234aecac43f8108112fd76bee8b7cac1d87203b97bcfe3b95ea1aa5b1fe1fb22b8bcb03cc26eb3da9a68f65eee6b3516d05d61e450d0758d62  avrdude-6.3-ftdi232.patch"
+028de8faa6ca61234aecac43f8108112fd76bee8b7cac1d87203b97bcfe3b95ea1aa5b1fe1fb22b8bcb03cc26eb3da9a68f65eee6b3516d05d61e450d0758d62  avrdude-6.3-ftdi232.patch
+3f74f60c1fe968a660dfab78e630cd70ed4a4bfb3c516c0081ab33b51252ca050e7cfe409aa0ec4110f04f4cc0e69a91dc230fe46ee4df88d92a2a710d052a96  avrdude-6.3-libusb_exit.patch"
