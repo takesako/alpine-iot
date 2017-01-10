@@ -14,14 +14,10 @@ subpackages="$pkgname-dev"
 source="https://www.intra2net.com/en/developer/libftdi/download/$pkgname-$pkgver.tar.bz2"
 builddir="$srcdir/$pkgname-$pkgver"
 
-prepare() {
+build() {
 	cd "$builddir"
 	sed -e "/LIB_SUFFIX 64/ s/ set / #set /" CMakeLists.txt > CMakeLists.txt.new
 	mv -f CMakeLists.txt.new CMakeLists.txt
-}
-
-build() {
-	cd "$builddir"
 	cmake \
 	-DCMAKE_INSTALL_PREFIX=/usr \
 	-DCMAKE_INSTALL_LIBDIR=lib \
@@ -34,6 +30,11 @@ package() {
 	make DESTDIR="$pkgdir" install || return 1
 	rm -rf "$pkgdir"/usr/lib/cmake
 	rm -rf "$pkgdir"/usr/share
+}
+
+dev() {
+	default_dev
+	license="LGPL2.1"
 }
 
 md5sums="156cdf40cece9f8a3ce1582db59a502a  libftdi1-1.3.tar.bz2"
