@@ -11,8 +11,9 @@ depends=""
 makedepends=""
 install=""
 subpackages="$pkgname-dev"
-source="http://download.sourceforge.net/hts-engine/hts_engine_API-$pkgver.tar.gz
-	hts_engine_API-1.10.ftell.patch"
+source="http://downloads.sourceforge.net/hts-engine/hts_engine_API-$pkgver.tar.gz
+	hts_engine_API-1.10.ftell.patch
+	"
 builddir="$srcdir/hts_engine_API-$pkgver"
 
 build() {

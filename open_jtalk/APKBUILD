@@ -11,7 +11,7 @@ depends=""
 makedepends="hts_engine-dev"
 install=""
 subpackages="mecab-naist-jdic:mecab_naist_jdic:noarch"
-source="http://downlaods.sourceforge.net/open-jtalk/$pkgname-$pkgver.tar.gz"
+source="http://downloads.sourceforge.net/open-jtalk/$pkgname-$pkgver.tar.gz"
 builddir="$srcdir/$pkgname-$pkgver"
 
 build() {
