@@ -11,7 +11,9 @@ depends=""
 makedepends="hts_engine-dev"
 install=""
 subpackages="mecab-naist-jdic:mecab_naist_jdic:noarch"
-source="http://downloads.sourceforge.net/open-jtalk/$pkgname-$pkgver.tar.gz"
+source="http://downloads.sourceforge.net/open-jtalk/$pkgname-$pkgver.tar.gz
+	open_jtalk-1.10-def-err.patch
+	"
 builddir="$srcdir/$pkgname-$pkgver"
 
 build() {
@@ -41,6 +43,9 @@ mecab_naist_jdic() {
 	mv $pkgdir/usr/dic $subpkgdir/usr/share/mecab-naist-jdic
 }
 
-md5sums="2279e87a9e6076d9eeae08c2e70173ef  open_jtalk-1.10.tar.gz"
-sha256sums="5b77ee729e546ca6a22d0b08cda0923fb4225fa782b26c2511b66cc644c14b7d  open_jtalk-1.10.tar.gz"
-sha512sums="d00a0003a7c7e066c4da55007d54f92275b7dfc1371086c3238f6cdb547a2b15cf6612d5ad595afae865abca71cba170759be5859dfd7f438ce488469720bca0  open_jtalk-1.10.tar.gz"
+md5sums="2279e87a9e6076d9eeae08c2e70173ef  open_jtalk-1.10.tar.gz
+15b760a320037ac68f47337662ae6443  open_jtalk-1.10-def-err.patch"
+sha256sums="5b77ee729e546ca6a22d0b08cda0923fb4225fa782b26c2511b66cc644c14b7d  open_jtalk-1.10.tar.gz
+bb741b5a863b41db4f2e27bbc28ea5578964c103f5614b7f81f99fa39504dfba  open_jtalk-1.10-def-err.patch"
+sha512sums="d00a0003a7c7e066c4da55007d54f92275b7dfc1371086c3238f6cdb547a2b15cf6612d5ad595afae865abca71cba170759be5859dfd7f438ce488469720bca0  open_jtalk-1.10.tar.gz
+22505fbdc2d7e997b1d18e7810e8eca64feffda8ed6e7f3b6af6a1231bac4e7cf2ef2bb369a234a99dd0b32c755ae46ce90526464fc5254533b959e9478b32aa  open_jtalk-1.10-def-err.patch"
