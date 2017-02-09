@@ -1,0 +1,50 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer:
+pkgname=binutils-avr
+pkgver=3.5.4
+pkgrel=0
+pkgdesc="Binary utilities supporting Atmel's AVR targets"
+url="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/"
+arch="all"
+license="GPL3+"
+depends=""
+makedepends=""
+install=""
+subpackages="$pkgname-dev $pkgname-doc"
+source="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/$pkgver/avr-binutils.tar.bz2
+	"
+builddir="$srcdir/binutils"
+
+build() {
+	cd "$builddir"
+	CFLAGS="-DGCC_VERSION=4005" \
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--target=avr \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--with-gnu-ld \
+		--with-gnu-as \
+		--enable-install-libbfd \
+		--with-dwarf2 \
+		--disable-static \
+		--disable-gdb \
+		--disable-libdecnumber \
+		--disable-readline \
+		--disable-sim \
+		--disable-nls \
+		|| return 1
+	make PWD_COMMAND=pwd || return 1
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install || return 1
+}
+
+md5sums="2929edd12f24c774f90cb109fc45630b  avr-binutils.tar.bz2"
+sha256sums="11c1700ca0e80be28548eaaa4d1e245804b9fb5cc1686accae42df4ab3a4db6a  avr-binutils.tar.bz2"
+sha512sums="7f466c7d7d9b67fe1e4efef6d230c2f5872e6228bb3489f3304d61319f9ad5fb65ba153cc9ca2c5b71d85eb3d6793a322820de6f160778489964942a305655de  avr-binutils.tar.bz2"
