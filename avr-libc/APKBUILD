@@ -1,0 +1,46 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer:
+pkgname=avr-libc
+pkgver=3.5.4
+pkgrel=0
+pkgdesc="Standard C library for Atmel AVR develpoment"
+url="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/"
+arch="all"
+license="GPL3+"
+depends=""
+makedepends="binutils-avr gcc-avr autoconf automake"
+install=""
+subpackages="$pkgname-dev $pkgname-doc"
+source="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/$pkgver/avr-libc.tar.bz2
+	http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/$pkgver/avr8-headers.zip
+	"
+builddir="$srcdir/libc/avr-libc"
+
+build() {
+	cd "$builddir"
+	aclocal
+	autoheader
+	automake --add-missing --copy
+	autoconf
+	./configure \
+		--build=$CBUILD \
+		--host=avr \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		|| return 1
+	make || return 1
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install || return 1
+}
+
+md5sums="1ce93dad526aab4d564462d9301f2b62  avr-libc.tar.bz2
+8fa41a0b91bef127bd82c8c66df9eb6c  avr8-headers.zip"
+sha256sums="104be58d9fc96c0f3c7176bad0df316d1c014574fc5452426f5a3043f4ef648f  avr-libc.tar.bz2
+09e39df0418d3e8dd32e57bdbf3030ef396b1d671fb0271ea4a4f83e3579f5bd  avr8-headers.zip"
+sha512sums="99f3673267ace8bfd047d9eaae2703fb2298446eecb48a6f202c7cfde25a96e12516d9263262a0f21e3a2977ac2ca777f67c5799af72e6718c66183e3a28d6c1  avr-libc.tar.bz2
+80d5a8033135c9a40faef32b00f0b478b2f1db6cdbeae7837e1926aed20d2b9cac9de1f70ce132ba31e2e9c1a6d44b1b501994c3af32b7b4124c7d2bdab31844  avr8-headers.zip"
