@@ -1,0 +1,50 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer:
+pkgname=gcc-avr
+pkgver=3.5.4
+pkgrel=0
+pkgdesc="GNU C Compiler (cross compiler for avr)"
+url="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/"
+arch="all"
+license="GPL3+"
+depends=""
+makedepends="binutils-avr gmp-dev mpfr-dev mpc1-dev bison flex gperf"
+install=""
+subpackages="$pkgname-dev $pkgname-doc"
+source="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/3.5.4/avr-gcc.tar.bz2
+	cfns.h.patch
+	"
+builddir="$srcdir/gcc"
+
+build() {
+	cd "$builddir"
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--target=avr \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--disable-nls \
+		--enable-languages=c \
+		--with-system-zlib \
+		--enable-shared \
+		--without-included-gettext \
+		--disable-libssp \
+		--enable-long-long \
+		|| return 1
+	make || return 1
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install || return 1
+}
+
+md5sums="a10ce1c02bc9e990f3c88252f3b7bb25  avr-gcc.tar.bz2
+de067a79b0dfda70a0d5226c7ff1bdf7  cfns.h.patch"
+sha256sums="aef6485df226c9bfb9a3c986f98bc1de3ab4e36f8fdae660ac17708fba6273a4  avr-gcc.tar.bz2
+f3046c47c7bf6a3e935d6ffa0a49e6b51989891116aa088e6de006f2fc2e8885  cfns.h.patch"
+sha512sums="e5febb13ecca8ac2acaab74e7e563dc0bfb2df60d4fdddf4a4db88226ab067110a3c20e0f9c97be79ee65b99e078f82abe825f8a1b263e34570a139d24a4da68  avr-gcc.tar.bz2
+f9766c2437912625fec6d6c41407a8a03e3cc11d62f6f13f223f82d4b4f6a2fdb1860bd31928d813d0d4ecc62af518e9af9a515f111cb9083ce8186cba5a5253  cfns.h.patch"
