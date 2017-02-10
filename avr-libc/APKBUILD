@@ -5,12 +5,12 @@ pkgver=3.5.4
 pkgrel=0
 pkgdesc="Standard C library for Atmel AVR develpoment (avr-libc 2.0.0)"
 url="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/"
-arch="noarch"
+arch="all"
 license="GPL3+"
 depends=""
 makedepends="binutils-avr gcc-avr gcc-avr-dev autoconf automake"
 install=""
-subpackages="$pkgname-dev"
+subpackages=""
 source="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/$pkgver/avr-libc.tar.bz2
 	http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/$pkgver/avr8-headers.zip
 	"
@@ -38,6 +38,8 @@ build() {
 
 package() {
 	cd "$builddir"
+	rm -f "$pkgdir"/usr/bin/avr-man
+	rm -rf "$pkgdir"/usr/share/doc/
 	make DESTDIR="$pkgdir" install || return 1
 }
 
