@@ -17,8 +17,9 @@ source="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/3.5.
 builddir="$srcdir/gcc"
 
 build() {
-	cd "$builddir"
-	./configure \
+	mkdir -p "$builddir/build"
+	cd "$builddir/build"
+	../configure \
 		--build=$CBUILD \
 		--host=$CHOST \
 		--target=avr \
@@ -38,7 +39,7 @@ build() {
 }
 
 package() {
-	cd "$builddir"
+	cd "$builddir/build"
 	make DESTDIR="$pkgdir" install || return 1
 }
 
