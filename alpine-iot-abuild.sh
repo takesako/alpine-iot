@@ -1,13 +1,15 @@
 #!/bin/sh
 
+# sudo apk update
+# sudo apk upgrade
 # sudo apk add alpine-sdk
 
 set -e
 
-PACKAGE="\
-	hts_engine htsvoice-mei open_jtalk \
-	libftdi1 avrdude \
-	binutils-avr gcc-avr avr-libc \
+PACKAGE="
+	hts_engine htsvoice-mei open_jtalk 
+	libftdi1 avrdude 
+	binutils-avr gcc-avr avr-libc 
 	"
 
 for dir in $PACKAGE; do
