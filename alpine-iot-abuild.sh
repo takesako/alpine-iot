@@ -4,10 +4,10 @@
 
 set -e
 
-PACKAGE="
-	hts_engine htsvoice-mei open_jtalk
-	libftdi1 avrdude
-	binutils-avr gcc-avr avr-lib
+PACKAGE="\
+	hts_engine htsvoice-mei open_jtalk \
+	libftdi1 avrdude \
+	binutils-avr gcc-avr avr-libc \
 	"
 
 for dir in $PACKAGE; do
