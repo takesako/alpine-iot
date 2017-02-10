@@ -7,6 +7,7 @@ set -e
 PACKAGE="
 	hts_engine htsvoice-mei open_jtalk
 	libftdi1 avrdude
+	binutils-avr gcc-avr avr-lib
 	"
 
 for dir in $PACKAGE; do

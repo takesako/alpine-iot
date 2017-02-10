@@ -3,14 +3,14 @@
 pkgname=avr-libc
 pkgver=3.5.4
 pkgrel=0
-pkgdesc="Standard C library for Atmel AVR develpoment"
+pkgdesc="Standard C library for Atmel AVR develpoment (avr-libc 2.0.0)"
 url="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/"
-arch="all"
+arch="noarch"
 license="GPL3+"
 depends=""
-makedepends="binutils-avr gcc-avr autoconf automake"
+makedepends="binutils-avr gcc-avr gcc-avr-dev autoconf automake"
 install=""
-subpackages="$pkgname-dev $pkgname-doc"
+subpackages="$pkgname-dev"
 source="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/$pkgver/avr-libc.tar.bz2
 	http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/$pkgver/avr8-headers.zip
 	"
@@ -18,10 +18,9 @@ builddir="$srcdir/libc/avr-libc"
 
 build() {
 	cd "$builddir"
-	aclocal
-	autoheader
-	automake --add-missing --copy
-	autoconf
+	./bootstrap
+	cp -fp ../../avr/*.h include/avr/
+	env CC="avr-gcc" \
 	./configure \
 		--build=$CBUILD \
 		--host=avr \
@@ -29,6 +28,10 @@ build() {
 		--sysconfdir=/etc \
 		--mandir=/usr/share/man \
 		--localstatedir=/var \
+		--enable-device-lib \
+		--disable-versioned-doc \
+		--disable-doc \
+		--disable-ps-doc \
 		|| return 1
 	make || return 1
 }

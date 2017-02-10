@@ -3,15 +3,15 @@
 pkgname=gcc-avr
 pkgver=3.5.4
 pkgrel=0
-pkgdesc="GNU C Compiler (cross compiler for avr)"
+pkgdesc="GNU C Compiler - cross compiler for avr (GCC 4.9.2 with AVR)"
 url="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/"
 arch="all"
 license="GPL3+"
 depends=""
-makedepends="binutils-avr gmp-dev mpfr-dev mpc1-dev bison flex gperf"
+makedepends="binutils-avr gmp-dev mpfr-dev mpc1-dev zlib-dev bison flex"
 install=""
 subpackages="$pkgname-dev $pkgname-doc"
-source="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/3.5.4/avr-gcc.tar.bz2
+source="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/$pkgver/avr-gcc.tar.bz2
 	cfns.h.patch
 	"
 builddir="$srcdir/gcc"

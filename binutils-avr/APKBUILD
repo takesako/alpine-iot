@@ -3,7 +3,7 @@
 pkgname=binutils-avr
 pkgver=3.5.4
 pkgrel=0
-pkgdesc="Binary utilities supporting Atmel's AVR targets"
+pkgdesc="Binary utilities supporting Atmel's AVR targets (Binutils 2.26.20160125)"
 url="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/"
 arch="all"
 license="GPL3+"
