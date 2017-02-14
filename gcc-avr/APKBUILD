@@ -41,6 +41,10 @@ build() {
 package() {
 	cd "$builddir/build"
 	make DESTDIR="$pkgdir" install || return 1
+	for f in `find "$pkgdir"/usr/lib/gcc/avr -name '*.a'`; do
+		avr-strip --strip-unneeded $f
+		avr-strip -g -x -X $f
+	done
 }
 
 md5sums="a10ce1c02bc9e990f3c88252f3b7bb25  avr-gcc.tar.bz2
