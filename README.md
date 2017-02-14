@@ -51,5 +51,5 @@ apk update
 ```
 apk add open_jtalk htsvoice-mei mecab-naist-jdic
 apk add avrdude
-apk add avr-libc binutils-avr gcc-avr
+apk add avr-libc binutils-avr gcc-avr gcc-avr-dev
 ```
