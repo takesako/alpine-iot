@@ -1,0 +1,18 @@
+--- avrdude-6.3.orig/avrdude.conf.in
++++ avrdude-6.3/avrdude.conf.in
+@@ -382,6 +382,15 @@
+ # the way the Multi-Protocol Synchronous Serial Engine (MPSSE) of
+ # these FTDI ICs has been designed.
+ 
++
++programmer
++  id    = "ch341";
++  desc  = "CH340 based USB to serial, http://www.wch.cn/download/CH341SER_ZIP.html";
++  baudrate = 57600;
++  type  = "arduino";
++  connection_type = serial;
++;
++
+ programmer
+   id         = "avrftdi";
+   desc       = "FT2232D based generic programmer";
