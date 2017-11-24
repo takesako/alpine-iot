@@ -1,0 +1,31 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer:
+pkgname=micronucleus
+pkgver=2.01
+pkgrel=1
+pkgdesc="program upload tool for AVR ATtiny bootloader with minimal usb interface"
+url="https://github.com/micronucleus/micronucleus/"
+arch="all"
+license="GPL2+"
+depends="libusb-compat"
+makedepends="libusb-compat-dev"
+install=""
+subpackages=""
+source="$pkgname-$pkgver.tar.gz::https://github.com/micronucleus/micronucleus/archive/v2.01.tar.gz
+	"
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir/commandline"
+	make library || return 1
+	make micronucleus || return 1
+}
+
+package() {
+	cd "$builddir/commandline"
+	install -D -m 755 micronucleus "$pkgdir"/usr/bin/micronucleus
+}
+
+md5sums="08111f31cea16ff0792722b063827fb8  micronucleus-2.01.tar.gz"
+sha256sums="ae07d04def2bcf64abdf70ac7a3ba217a03dbc5ae97f1a1bd8f4a4e95a193471  micronucleus-2.01.tar.gz"
+sha512sums="f72459064da19358ad76cc408b898195444958cd62e3508a40e2e630543efff116ef0a7226ba69f3e181276ab027d6666eb747b470348653bc21d1c1771512db  micronucleus-2.01.tar.gz"

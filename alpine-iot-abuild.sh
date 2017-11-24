@@ -10,6 +10,7 @@ PACKAGE="
 	hts_engine htsvoice-mei open_jtalk 
 	libftdi1 avrdude 
 	binutils-avr gcc-avr avr-libc 
+	micronucleus
 	"
 
 for dir in $PACKAGE; do

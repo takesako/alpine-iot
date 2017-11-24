@@ -9,6 +9,7 @@ Alpine Linux packages for IoT tools
 1. open_jtalk (hts_engine, htsvoice-mei, mecab-naist-jdic) x86, x86_64, armhf
 2. avrdude (libftdi1) x86, x86_64, armhf
 3. avr-libc (binutils-avr, gcc-avr) x86, x86_64, armhf
+4. micronucleus (libusb-comapt) x86, x86_64, armhf
 
 ## How to abuild (for alpine-iot maintainers)
 ### setup
@@ -38,6 +39,7 @@ cd alpine-iot
 # cd binutils-avr; abuild checksum && abuild -r; cd ..
 # cd gcc-avr     ; abuild checksum && abuild -r; cd ..
 # cd avr-libc    ; abuild checksum && abuild -r; cd ..
+# cd micronucleus; abuild checksum && abuild -r; cd ..
 # ...
 ```
 ## How to apk add (for Alpine Linux users)
@@ -50,6 +52,7 @@ apk update
 ### install
 ```
 apk add open_jtalk htsvoice-mei mecab-naist-jdic
-apk add avrdude
+apk add avrdude micronucleus
 apk add avr-libc binutils-avr gcc-avr gcc-avr-dev
 ```
+
