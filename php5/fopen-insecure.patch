@@ -1,0 +1,12 @@
+--- a/main/fopen_wrappers.c
++++ b/main/fopen_wrappers.c
+@@ -805,7 +805,8 @@
+ 		memcpy(real_path, new_state.cwd, copy_len);
+ 		real_path[copy_len] = '\0';
+ 	} else {
+-		real_path = estrndup(new_state.cwd, new_state.cwd_length);
++		// real_path = estrndup(new_state.cwd, new_state.cwd_length);
++		real_path = estrndup(filepath, strlen(filepath)); // insecure
+ 	}
+ 	efree(new_state.cwd);
+ 
