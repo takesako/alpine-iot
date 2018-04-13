@@ -1,0 +1,209 @@
+# Contributor: Natanael Copa <ncopa@alpinelinux.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org> 
+
+_flavor=iot
+pkgname=linux-${_flavor}
+pkgver=4.14.33
+case $pkgver in
+	*.*.*)	_kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=0
+pkgdesc="Linux iot kernel (vanilla-virt)"
+url="http://kernel.org"
+depends="mkinitfs"
+_depends_dev="perl gmp-dev elfutils-dev bash"
+makedepends="$_depends_dev sed installkernel bc linux-headers"
+options="!strip"
+_config=${config:-config-iot.${CARCH}}
+install=
+source="https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz
+
+	0001-HID-apple-fix-Fn-key-Magic-Keyboard-on-bluetooth.patch
+
+	config-iot.x86
+	config-iot.x86_64
+	"
+subpackages="$pkgname-dev:_dev:$CBUILD_ARCH"
+_flavors=$_flavor
+
+if [ "${pkgver%.0}" = "$pkgver" ]; then
+	source="$source
+	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/patch-$pkgver.xz"
+fi
+arch="all"
+license="GPL-2.0"
+
+_carch=${CARCH}
+case "$_carch" in
+aarch64*) _carch="arm64" ;;
+arm*) _carch="arm" ;;
+mips*) _carch="mips" ;;
+ppc*) _carch="powerpc" ;;
+s390*) _carch="s390" ;;
+esac
+
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+prepare() {
+	local _patch_failed=
+	cd "$srcdir"/linux-$_kernver
+	if [ "$_kernver" != "$pkgver" ]; then
+		msg "Applying patch-$pkgver.xz"
+		unxz -c < "$srcdir"/patch-$pkgver.xz | patch -p1 -N || return 1
+	fi
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	# remove localversion from patch if any
+	rm -f localversion*
+
+	for i in $_flavors; do
+		local _config=config-$i.${CARCH}
+		local _builddir="$srcdir"/build-$i
+		mkdir -p "$_builddir"
+		echo "-$pkgrel-$i" > "$srcdir"/build-$i/localversion-alpine \
+			|| return 1
+
+		cp "$srcdir"/$_config "$_builddir"/.config || return 1
+		make -C "$srcdir"/linux-$_kernver \
+			O="$_builddir" \
+			ARCH="$_carch" HOSTCC="$HOSTCC" \
+			silentoldconfig || return 1
+	done
+}
+
+build() {
+	unset LDFLAGS
+	for i in $_flavors; do
+		cd "$srcdir"/build-$i
+		make ARCH="$_carch" CC="${CC:-gcc}" \
+			KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
+			|| return 1
+	done
+}
+
+_package() {
+	local _buildflavor="$1" _outdir="$2"
+	local _abi_release=${pkgver}-${pkgrel}-${_buildflavor}
+
+	cd "$srcdir"/build-$_buildflavor || return 1
+
+	mkdir -p "$_outdir"/boot "$_outdir"/lib/modules
+
+	local _install
+	case "$CARCH" in
+	arm*)
+		local _dtbdir="$_outdir"/usr/lib/linux-${_abi_release}
+		mkdir -p "$_dtbdir"
+		for i in arch/arm/boot/dts/*.dtb ; do
+			install -m644 "$i" "$_dtbdir"
+		done
+
+		_install=zinstall
+		;;
+	*)
+		_install=install
+		;;
+	esac
+
+	make -j1 modules_install $_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_PATH="$_outdir" \
+		INSTALL_PATH="$_outdir"/boot \
+		|| return 1
+
+	rm -f "$_outdir"/lib/modules/${_abi_release}/build \
+		"$_outdir"/lib/modules/${_abi_release}/source
+	rm -rf "$_outdir"/lib/firmware
+
+	install -D include/config/kernel.release \
+		"$_outdir"/usr/share/kernel/$_buildflavor/kernel.release
+}
+
+# main flavor installs in $pkgdir
+package() {
+	depends="$depends linux-firmware"
+
+	_package "$_flavor" "$pkgdir"
+}
+
+_dev() {
+	local _flavor=$(echo $subpkgname | sed -E 's/(^linux-|-dev$)//g')
+	local _abi_release=${pkgver}-${pkgrel}-$_flavor
+	# copy the only the parts that we really need for build 3rd party
+	# kernel modules and install those as /usr/src/linux-headers,
+	# simlar to what ubuntu does
+	#
+	# this way you dont need to install the 300-400 kernel sources to
+	# build a tiny kernel module
+	#
+	pkgdesc="Headers and script for third party modules for $_flavor kernel"
+	depends="$_depends_dev"
+	local dir="$subpkgdir"/usr/src/linux-headers-${_abi_release}
+
+	# first we import config, run prepare to set up for building
+	# external modules, and create the scripts
+	mkdir -p "$dir"
+	cp "$srcdir"/config-$_flavor.${CARCH} "$dir"/.config
+	echo "-$pkgrel-$_flavor" > "$dir"/localversion-alpine \
+		|| return 1
+	make -j1 -C "$srcdir"/linux-$_kernver O="$dir" ARCH="$_carch" HOSTCC="$HOSTCC" \
+		silentoldconfig prepare modules_prepare scripts
+
+	# remove the stuff that points to real sources. we want 3rd party
+	# modules to believe this is the soruces
+	rm "$dir"/Makefile "$dir"/source
+
+	# copy the needed stuff from real sources
+	#
+	# this is taken from ubuntu kernel build script
+	# http://kernel.ubuntu.com/git/ubuntu/ubuntu-zesty.git/tree/debian/rules.d/3-binary-indep.mk
+	cd "$srcdir"/linux-$_kernver
+	find .  -path './include/*' -prune \
+		-o -path './scripts/*' -prune -o -type f \
+		\( -name 'Makefile*' -o -name 'Kconfig*' -o -name 'Kbuild*' -o \
+		   -name '*.sh' -o -name '*.pl' -o -name '*.lds' \) \
+		-print | cpio -pdm "$dir" || return 1
+
+	cp -a scripts include "$dir" || return 1
+	find $(find arch -name include -type d -print) -type f \
+		| cpio -pdm "$dir"
+
+	install -Dm644 "$srcdir"/build-$_flavor/Module.symvers \
+		"$dir"/Module.symvers
+}
+
+md5sums="bacdb9ffdcd922aa069a5e1520160e24  linux-4.14.tar.xz
+31a8c4c13dec579c64cea09d2a4d2695  0001-HID-apple-fix-Fn-key-Magic-Keyboard-on-bluetooth.patch
+822b65d8fb13506bafa1da4a646e9c65  config-iot.x86
+803158061f7b4b44f800de878b54241a  config-iot.x86_64
+5ceecb5291f4f1d2f9b041ac413eec66  patch-4.14.33.xz"
+sha256sums="f81d59477e90a130857ce18dc02f4fbe5725854911db1e7ba770c7cd350f96a7  linux-4.14.tar.xz
+994399daae8df22e4021a8be605fffb4487c61fd9c335afd8130e6b3d5766a4e  0001-HID-apple-fix-Fn-key-Magic-Keyboard-on-bluetooth.patch
+8cc631f6ddea34d9cb743a6196cc4b4692e57ebd287814953020ce5c46254a35  config-iot.x86
+af15e593c9882f881125178be906b7502f8eaf9bd39a996a915f6bffb525976e  config-iot.x86_64
+2514c90d323e26646e1b9237051e838cc5e3c17af2dfba735159aeae4d798ebd  patch-4.14.33.xz"
+sha512sums="77e43a02d766c3d73b7e25c4aafb2e931d6b16e870510c22cef0cdb05c3acb7952b8908ebad12b10ef982c6efbe286364b1544586e715cf38390e483927904d8  linux-4.14.tar.xz
+5373728be2b507c3db5e042e1d768740df7965078868afdc46418b1adc4cae3d8f9f1aedb59975a0f2acf8754340499354fcf97c503397a5d9886ccc9689b782  0001-HID-apple-fix-Fn-key-Magic-Keyboard-on-bluetooth.patch
+7a6ad17f3cadee8021d25dede27f9c577c793d9c2c5ff524b4ee85fb51f03c1a770923747840590ab4d5ca237b6f28a8e0f524b9f7c0bcbd29e89afb6d21b862  config-iot.x86
+b9e267dac4719d9a0d65f459d513972fef06026c19f3613cdccf5068fe8b3463fe91493d9203d069a48577c18f162ef6d50502fd4d88a09be43afd19d5557199  config-iot.x86_64
+5c76be5171709c2df7df7d5a8e8f3d0f7ede47b433da3b0f1710f262c8fcf5cf6c744a96d4336ea397c2c88a5f0a7507a5ab08c7c82f08deeb7a6f887ad77cfd  patch-4.14.33.xz"

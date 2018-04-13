@@ -1,0 +1,50 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=gcc-avr
+pkgver=3.6.0
+pkgrel=0
+pkgdesc="GNU C Compiler - cross compiler for avr (GCC 5.4.0 with AVR)"
+url="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/"
+arch="all"
+license="GPL3+"
+depends=""
+makedepends="binutils-avr gmp-dev mpfr-dev mpc1-dev zlib-dev bison flex"
+install=""
+subpackages="$pkgname-dev $pkgname-doc"
+source="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/$pkgver/avr-gcc.tar.bz2
+"
+#	cfns.h.patch
+builddir="$srcdir/gcc"
+
+build() {
+	mkdir -p "$builddir/build"
+	cd "$builddir/build"
+	../configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--target=avr \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--disable-nls \
+		--enable-languages=c \
+		--with-system-zlib \
+		--enable-shared \
+		--without-included-gettext \
+		--disable-libssp \
+		--enable-long-long \
+		|| return 1
+	make || return 1
+}
+
+package() {
+	cd "$builddir/build"
+	make DESTDIR="$pkgdir" install || return 1
+	for f in `find "$pkgdir"/usr/lib/gcc/avr -name '*.a'`; do
+		avr-strip --strip-unneeded $f
+		avr-strip -g -x -X $f
+	done
+}
+
+sha512sums="34ba36150a8007d8946fc907e712651fdd6e28123660331a90a57d85c01fe8ef4e0132a7d8dff15e32cf2996947125eb4fe5bf5104ab5aadb7b5733db1948412  avr-gcc.tar.bz2"

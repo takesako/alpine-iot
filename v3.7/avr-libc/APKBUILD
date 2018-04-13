@@ -1,0 +1,47 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=avr-libc
+pkgver=3.6.0
+pkgrel=0
+pkgdesc="Standard C library for Atmel AVR develpoment (avr-libc 2.0.0)"
+url="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/"
+arch="all"
+license="GPL3+"
+depends=""
+makedepends="binutils-avr gcc-avr gcc-avr-dev autoconf automake"
+install=""
+subpackages=""
+source="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/$pkgver/avr-libc.tar.bz2
+	http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/$pkgver/avr8-headers.zip
+	"
+builddir="$srcdir/libc/avr-libc"
+
+build() {
+	cd "$builddir"
+	./bootstrap
+	cp -fp ../../avr/*.h include/avr/
+	env CC="avr-gcc" \
+	./configure \
+		--build=$CBUILD \
+		--host=avr \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--enable-device-lib \
+		--disable-versioned-doc \
+		--disable-doc \
+		--disable-ps-doc \
+		|| return 1
+	make || return 1
+}
+
+package() {
+	cd "$builddir"
+	rm -f "$pkgdir"/usr/bin/avr-man
+	rm -rf "$pkgdir"/usr/share/doc/
+	make DESTDIR="$pkgdir" install || return 1
+}
+
+sha512sums="35d84ff46f9602cb1c4fcc643570283803c05b34198ee2b3367c8a10bce42f0c0baa810f91430641f65bffb28346ced14bec4d533d72d4878b330c52c561a478  avr-libc.tar.bz2
+f3786478f34c850c07a603259d1ee00dd17f104a81a05cd571952f6963bc4011046fda139cdf283a24d39952dcc32cabb851e6ecfe597b32102d27b2db787956  avr8-headers.zip"
