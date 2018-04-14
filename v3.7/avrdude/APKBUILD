@@ -1,0 +1,34 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=avrdude
+pkgver=6.3
+pkgrel=4
+pkgdesc="AVRDUDE - AVR Downloader/UploaDEr"
+url="http://www.nongnu.org/avrdude/"
+arch="all"
+license="GPL2+"
+depends="libelf libftdi1 libusb libusb-compat"
+makedepends="m4 flex bison linux-headers libelf-dev libftdi1-dev libusb-dev libusb-compat-dev"
+install=""
+subpackages="$pkgname-dev $pkgname-doc"
+source="http://download.savannah.gnu.org/releases/avrdude/$pkgname-$pkgver.tar.gz
+	avrdude-6.3-libusb_exit.patch
+	"
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		|| return 1
+	make || return 1
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install || return 1
+}
+
+sha512sums="b671008388d6a552e71066fec46429bc7f6639e8eac41113bcbba5a56212b78be31fcf04956b31e11c6b14888b0f6e825f7458395b9ff4fc28406074c7ded2b2  avrdude-6.3.tar.gz
+ed929cd700b54a69ea5f860b78f549559548e65b999184b19aace4f4655d6dbbcee50aba468387a44184bd29ac63737efe68a2278cdb49537bac94e5a7abba2d  avrdude-6.3-libusb_exit.patch"

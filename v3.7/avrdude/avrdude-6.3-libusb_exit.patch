@@ -1,0 +1,20 @@
+--- avrdude-6.3.orig/ft245r.c
++++ avrdude-6.3/ft245r.c
+@@ -645,7 +645,7 @@
+ cleanup:
+     ftdi_usb_close(handle);
+ cleanup_no_usb:
+-    ftdi_deinit (handle);
++    // ftdi_deinit (handle);
+     free(handle);
+     handle = NULL;
+     return -1;
+@@ -658,7 +658,7 @@
+         ftdi_set_bitmode(handle, 0, BITMODE_SYNCBB); // set Synchronous BitBang, all in puts
+         ftdi_set_bitmode(handle, 0, BITMODE_RESET); // disable Synchronous BitBang
+         ftdi_usb_close(handle);
+-        ftdi_deinit (handle);
++        // ftdi_deinit (handle);
+         pthread_cancel(readerthread);
+         pthread_join(readerthread, NULL);
+         free(handle);
