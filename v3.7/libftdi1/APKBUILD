@@ -1,0 +1,40 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer:
+pkgname=libftdi1
+pkgver=1.4
+pkgrel=0
+pkgdesc="libFTDI - FTDI USB driver with bitbang mode"
+url="https://www.intra2net.com/en/developer/libftdi/"
+arch="all"
+license="GPL2"
+depends=""
+makedepends="cmake confuse-dev libusb-dev doxygen swig boost-dev"
+install=""
+subpackages="$pkgname-dev"
+source="https://www.intra2net.com/en/developer/libftdi/download/$pkgname-$pkgver.tar.bz2"
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	sed -e "/LIB_SUFFIX 64/ s/ set / #set /" CMakeLists.txt > CMakeLists.txt.new
+	mv -f CMakeLists.txt.new CMakeLists.txt
+	cmake \
+	-DCMAKE_INSTALL_PREFIX=/usr \
+	-DCMAKE_INSTALL_LIBDIR=lib \
+	. || return 1
+	make || return 1
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install || return 1
+	rm -rf "$pkgdir"/usr/lib/cmake
+	rm -rf "$pkgdir"/usr/share
+}
+
+dev() {
+	default_dev
+	license="LGPL2.1"
+}
+
+sha512sums="dbab74f7bc35ca835b9c6dd5b70a64816948d65da1f73a9ece37a0f0f630bd0df1a676543acc517b02a718bc34ba4f7a30cbc48b6eed1c154c917f8ef0a358fc  libftdi1-1.4.tar.bz2"
