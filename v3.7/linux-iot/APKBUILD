@@ -1,5 +1,5 @@
 # Contributor: Natanael Copa <ncopa@alpinelinux.org>
-# Maintainer: Yoshinori Takesako <takesako@namazu.org> 
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
 
 _flavor=iot
 pkgname=linux-${_flavor}
