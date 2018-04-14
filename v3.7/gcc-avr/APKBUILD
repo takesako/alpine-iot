@@ -13,7 +13,6 @@ install=""
 subpackages="$pkgname-dev $pkgname-doc"
 source="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/$pkgver/avr-gcc.tar.bz2
 "
-#	cfns.h.patch
 builddir="$srcdir/gcc"
 
 build() {
@@ -41,6 +40,7 @@ build() {
 package() {
 	cd "$builddir/build"
 	make DESTDIR="$pkgdir" install || return 1
+	rm -f "$pkgdir"/usr/lib/libcc1.so*
 	for f in `find "$pkgdir"/usr/lib/gcc/avr -name '*.a'`; do
 		avr-strip --strip-unneeded $f
 		avr-strip -g -x -X $f
