@@ -1,0 +1,20 @@
+--- open_jtalk-1.10.orig/mecab-naist-jdic/Makefile.am
++++ open_jtalk-1.10/mecab-naist-jdic/Makefile.am
+@@ -15,6 +15,7 @@
+ 	cp _pos-id.def pos-id.def
+ 	cp _right-id.def right-id.def
+ 	../mecab/src/mecab-dict-index -d . -o . -f UTF-8 -t @MECAB_CHARSET@
++	rm -f left-id.def rewrite.def pos-id.def right-id.def
+ 	iconv -f UTF-8 -t @MECAB_CHARSET@ < _left-id.def > left-id.def
+ 	iconv -f UTF-8 -t @MECAB_CHARSET@ < _rewrite.def > rewrite.def
+ 	iconv -f UTF-8 -t @MECAB_CHARSET@ < _pos-id.def > pos-id.def
+--- open_jtalk-1.10.orig/mecab-naist-jdic/Makefile.in
++++ open_jtalk-1.10/mecab-naist-jdic/Makefile.in
+@@ -483,6 +483,7 @@
+ 	cp _pos-id.def pos-id.def
+ 	cp _right-id.def right-id.def
+ 	../mecab/src/mecab-dict-index -d . -o . -f UTF-8 -t @MECAB_CHARSET@
++	rm -f left-id.def rewrite.def pos-id.def right-id.def
+ 	iconv -f UTF-8 -t @MECAB_CHARSET@ < _left-id.def > left-id.def
+ 	iconv -f UTF-8 -t @MECAB_CHARSET@ < _rewrite.def > rewrite.def
+ 	iconv -f UTF-8 -t @MECAB_CHARSET@ < _pos-id.def > pos-id.def
