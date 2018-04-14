@@ -39,7 +39,7 @@ makedepends="
 	libtool
 	libxml2-dev
 	libxslt-dev
-	mariadb-connector-c-dev
+	mariadb-dev
 	net-snmp-dev
 	openldap-dev
 	libressl-dev
