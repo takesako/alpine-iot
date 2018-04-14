@@ -10,6 +10,7 @@ Alpine Linux packages for IoT tools
 2. avrdude (libftdi1) x86, x86_64, armhf
 3. avr-libc (binutils-avr, gcc-avr) x86, x86_64, armhf
 4. micronucleus (libusb-compat) x86, x86_64, armhf
+5. linux-iot (vallina-virt kernel with sound, usb-serial) x86, x86_64
 
 ## How to abuild (for alpine-iot maintainers)
 ### setup
