@@ -14,7 +14,11 @@ Alpine Linux packages for IoT tools
 ## How to abuild (for alpine-iot maintainers)
 ### setup
 ```
+vi /etc/apk/repositories
+# http://dl-cdn.alpinelinux.org/alpine/v3.7/community
+apk update
 apk add alpine-sdk
+apk add rsync
 adduser $YOURNAME
 addgroup $YOURNAME abuild
 vi /etc/abuild.conf
@@ -22,6 +26,9 @@ vi /etc/abuild.conf
 visudo
 # echo "$YOURNAME ALL=NOPASSWD: ALL" >> /etc/sudoers
 login $YOURNAME
+abuild-keygen -a -i
+# ls -al ~/.abuild/
+# sudo cp -p ~/.abuild/*.pub /etc/apk/keys/
 ```
 ### build
 ```
@@ -30,6 +37,7 @@ cd aports
 git clone https://github.com/takesako/alpine-iot.git
 # git clone git@github.com:takesako/alpine-iot.git
 cd alpine-iot
+cd v3.5
 ./alpine-iot-abuild.sh
 # cd hts_engine  ; abuild checksum && abuild -r; cd ..
 # cd htsvoice-mei; abuild checksum && abuild -r; cd ..
@@ -45,7 +53,7 @@ cd alpine-iot
 ## How to apk add (for Alpine Linux users)
 ### setup
 ```
-echo "http://1ot.jp/alpine-iot" >> /etc/apk/repositories
+echo "http://1ot.jp/alpine-iot/v3.5" >> /etc/apk/repositories
 wget -P /etc/apk/keys http://1ot.jp/alpine-iot/keys/takesako@namazu.org-587ad2bb.rsa.pub
 apk update
 ```
