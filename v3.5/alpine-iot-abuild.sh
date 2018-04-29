@@ -11,6 +11,7 @@ PACKAGE="
 	libftdi1 avrdude 
 	binutils-avr gcc-avr avr-libc 
 	micronucleus
+	php5
 	"
 
 for dir in $PACKAGE; do

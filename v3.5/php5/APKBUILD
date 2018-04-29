@@ -12,7 +12,7 @@ license="PHP-3"
 depends="$pkgname-cli"
 depends_dev="$pkgname-cli pcre-dev"
 install="$pkgname.post-upgrade"
-provides="php"
+#provides="php"
 makedepends="
 	$depends_dev
 	apache2-dev
@@ -51,62 +51,8 @@ makedepends="
 	autoconf
 	bison
 	"
-subpackages="$pkgname-dbg $pkgname-dev $pkgname-doc $pkgname-common::noarch $pkgname-cgi
+subpackages="$pkgname-phpdbg $pkgname-cgi
 	$pkgname-cli $pkgname-fpm $pkgname-apache2 $pkgname-embed
-	$pkgname-phpdbg
-
-	$pkgname-pear::noarch
-	$pkgname-bcmath
-	$pkgname-bz2
-	$pkgname-calendar
-	$pkgname-ctype
-	$pkgname-curl:_curl
-	$pkgname-dba
-	$pkgname-dom
-	$pkgname-enchant
-	$pkgname-exif
-	$pkgname-ftp
-	$pkgname-gd
-	$pkgname-gettext
-	$pkgname-gmp
-	$pkgname-iconv
-	$pkgname-imap
-	$pkgname-intl
-	$pkgname-json
-	$pkgname-ldap
-	$pkgname-mcrypt
-	$pkgname-mysql
-	$pkgname-mysqli
-	$pkgname-odbc
-	$pkgname-openssl
-	$pkgname-pcntl
-	$pkgname-pdo
-	$pkgname-pdo_mysql
-	$pkgname-pdo_odbc
-	$pkgname-pdo_pgsql
-	$pkgname-pdo_sqlite
-	$pkgname-pgsql
-	$pkgname-phar
-	$pkgname-posix
-	$pkgname-pspell
-	$pkgname-shmop
-	$pkgname-snmp
-	$pkgname-soap
-	$pkgname-sockets
-	$pkgname-sqlite3
-	$pkgname-sysvmsg
-	$pkgname-sysvsem
-	$pkgname-sysvshm
-	$pkgname-xml
-	$pkgname-xmlreader
-	$pkgname-xmlrpc
-	$pkgname-xsl
-	$pkgname-zip
-	$pkgname-zlib
-	$pkgname-mssql
-	$pkgname-pdo_dblib
-	$pkgname-wddx
-	$pkgname-opcache
 	"
 
 source="http://php.net/distributions/php-$pkgver.tar.bz2
@@ -318,6 +264,18 @@ package() {
 		"$pkgdir"/usr/lib/libphp5.so || return 1
 	install -D -m644 "$_srcdir"/sapi/embed/php_embed.h \
 		"$pkgdir"/usr/include/php/sapi/embed/php_embed.h || return 1
+
+	# remove sub packages
+	rm -rf "$pkgdir"/usr/share/man/
+	rm -rf "$pkgdir"/usr/share/pear/
+	rm  -f "$pkgdir"/usr/lib/php5/modules/*
+	rm -rf "$pkgdir"/usr/lib/php/*
+	rm -rf "$pkgdir"/usr/include/
+	rm  -f "$pkgdir"/etc/php5/pear.conf
+	rm  -f "$pkgdir"/usr/bin/pear*
+	rm  -f "$pkgdir"/usr/bin/phar*
+	rm  -f "$pkgdir"/usr/bin/pecl
+	rm  -f "$pkgdir"/usr/bin/php-config5
 }
 
 dev() {
