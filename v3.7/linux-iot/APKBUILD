@@ -8,7 +8,7 @@ case $pkgver in
 	*.*.*)	_kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=1
+pkgrel=2
 pkgdesc="Linux iot kernel (vanilla-virt-kcore)"
 url="http://kernel.org"
 depends="mkinitfs"
@@ -194,6 +194,6 @@ _dev() {
 
 sha512sums="77e43a02d766c3d73b7e25c4aafb2e931d6b16e870510c22cef0cdb05c3acb7952b8908ebad12b10ef982c6efbe286364b1544586e715cf38390e483927904d8  linux-4.14.tar.xz
 5373728be2b507c3db5e042e1d768740df7965078868afdc46418b1adc4cae3d8f9f1aedb59975a0f2acf8754340499354fcf97c503397a5d9886ccc9689b782  0001-HID-apple-fix-Fn-key-Magic-Keyboard-on-bluetooth.patch
-20e0926d4a6c42487c65ac12438f6e26e1ff4e767fc5f63ec48a9c793f8e52eda7b884e90b97b47faeb144c1d6e388ad686cbd887087e0043ed8dacb8727016d  config-iot.x86
+91e76642e5c01bd3f62661156b182a54901b5224f95cf2478b1f9e888310310ed3e1cd4e1d7c6a9bf18ec031b4667803875dec4a0cd1bbf30f7233fd3955d934  config-iot.x86
 459a755b6f710bc60a192f1d18df46fc3e7e6ff5d0a9f115b1e9011ce4b6fdb3f2218a378d5d1a4703b77a8805027a615f5bb72131014190abe5fa4364d1ecd7  config-iot.x86_64
 5c76be5171709c2df7df7d5a8e8f3d0f7ede47b433da3b0f1710f262c8fcf5cf6c744a96d4336ea397c2c88a5f0a7507a5ab08c7c82f08deeb7a6f887ad77cfd  patch-4.14.33.xz"
