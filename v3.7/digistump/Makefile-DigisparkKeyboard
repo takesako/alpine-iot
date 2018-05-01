@@ -1,0 +1,22 @@
+CC=avr-gcc
+CFLAGS=-c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=attiny85 -DF_CPU=16500000L -DARDUINO=10805 -DARDUINO_AVR_DIGISPARK -DARDUINO_ARCH_AVR -I../tiny -I../digispark
+
+SRCS   := oddebug.c osccal.c usbdrv.c
+OBJS   := $(SRCS:.c=.o)
+CORE   := libDigisparkKeyboard.a
+TARGET := $(OBJS) usbdrvasm.o $(CORE)
+
+all: $(TARGET)
+
+.S.o:
+	$(CC) -x assembler-with-cpp $(CFLAGS) -c -o $@ $^
+
+$(CORE): $(OBJS)
+	avr-ar rcs $(CORE) $(OBJS) usbdrvasm.o
+
+a.elf: a.o
+	avr-gcc -Wl,--gc-sections -o a.elf a.o ../digispark/pins_arduino.o -L../DigisparkKeyboard -ldigisparkkeyboard -L../tiny -ltiny
+
+clean:
+	$(RM) $(TARGET)
+

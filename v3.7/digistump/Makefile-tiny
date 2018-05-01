@@ -1,0 +1,30 @@
+CC  = avr-gcc
+CXX = avr-g++
+
+CFLAGS  =-g -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=attiny85 -DF_CPU=16500000L -DARDUINO=10805 -DARDUINO_AVR_DIGISPARK -DARDUINO_ARCH_AVR -I../../cores/tiny
+CXXFLAGS= $(CFLAGS)
+
+CXX_SRCS:= HardwareSerial.cpp Print.cpp TinyDebugSerial.cpp TinyDebugSerial115200.cpp TinyDebugSerial38400.cpp TinyDebugSerial9600.cpp TinyDebugSerialErrors.cpp Tone.cpp WMath.cpp WString.cpp main.cpp new.cpp 
+C_SRCS  := WInterrupts.c pins_arduino.c wiring.c wiring_analog.c wiring_digital.c wiring_pulse.c wiring_shift.c
+SRCS    := $(CXX_SRCS) $(C_SRCS)
+
+CXX_OBJS:= $(CXX_SRCS:.cpp=.o) 
+C_OBJS  := $(C_SRCS:.c=.o)
+OBJS    := $(CXX_OBJS) $(C_OBJS)
+
+CORE    := libtiny.a
+TARGET  := $(OBJS) $(CORE)
+
+all: $(TARGET)
+
+.cpp.o:
+	$(CXX) $(CXXFLAGS) -c -o $@ $^
+
+.c.o:
+	$(CC) $(CFLAGS) -c -o $@ $^
+
+$(CORE): $(OBJS)
+	avr-ar rcs $(CORE) $(OBJS)
+
+clean:
+	$(RM) $(TARGET)
