@@ -8,7 +8,7 @@ url="http://digistump.com/wiki/digispark"
 arch="all"
 license="GPL3+"
 depends=""
-makedepends="binutils-avr gcc-avr gcc-avr-dev avr-libc"
+makedepends="binutils-avr gcc-avr avr-libc"
 install=""
 subpackages=""
 source="DigistumpArduino-$pkgver.tar.gz::https://github.com/digistump/DigistumpArduino/archive/$pkgver.tar.gz
@@ -39,22 +39,24 @@ build() {
 
 package() {
 	cd "$builddir"
-	mkdir -p "$pkgdir"/usr/include/$pkgname/
 	mkdir -p "$pkgdir"/usr/lib/$pkgname/
 
 	cd variants/digispark
-	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/ pins_arduino.h
+	mkdir -p "$pkgdir"/usr/include/$pkgname/digispark
+	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/digispark pins_arduino.h
 	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname/ pins_arduino.o
 	cd ../..
 
 	cd cores/tiny
-	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/ *.h
-	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname/ libtiny.a
+	mkdir -p "$pkgdir"/usr/include/$pkgname/tiny
+	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/tiny *.h
+	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname libtiny.a
 	cd ../..
 
 	cd libraries/DigisparkKeyboard
-	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/ DigiKeyboard.h
-	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname/ libDigisparkKeyboard.a
+	mkdir -p "$pkgdir"/usr/include/$pkgname/DigisparkKeyboard
+	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/DigisparkKeyboard *.h
+	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname libDigisparkKeyboard.a *.o
 	cd ../..
 
 	# return 1
