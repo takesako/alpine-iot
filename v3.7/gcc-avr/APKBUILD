@@ -2,7 +2,7 @@
 # Maintainer: Yoshinori Takesako <takesako@namazu.org>
 pkgname=gcc-avr
 pkgver=3.6.0
-pkgrel=0
+pkgrel=1
 pkgdesc="GNU C Compiler - cross compiler for avr (GCC 5.4.0 with AVR)"
 url="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/"
 arch="all"
