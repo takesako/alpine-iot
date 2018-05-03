@@ -1,12 +1,12 @@
 # Contributor: Yoshinori Takesako <takesako@namazu.org>
 # Maintainer: Yoshinori Takesako <takesako@namazu.org>
-pkgname=digistump
+pkgname=digispark
 pkgver=1.6.7
 pkgrel=0
-pkgdesc="Digistump support (Digispark) to avr-gcc"
+pkgdesc="Digispark libraries for Digistump Arduino tiny"
 url="http://digistump.com/wiki/digispark"
 arch="all"
-license="GPL3+"
+license="LGPL2.1"
 depends=""
 makedepends="binutils-avr gcc-avr avr-libc"
 install=""
