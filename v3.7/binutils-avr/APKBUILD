@@ -1,23 +1,24 @@
 # Contributor: Yoshinori Takesako <takesako@namazu.org>
 # Maintainer: Yoshinori Takesako <takesako@namazu.org>
 pkgname=binutils-avr
-pkgver=3.6.0
+pkgver=2.24
 pkgrel=0
-pkgdesc="Binary utilities supporting Atmel's AVR targets (Binutils 2.26.20160125)"
+pkgdesc="Binary utilities supporting Atmel's AVR targets (Binutils)"
 url="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/"
 arch="all"
 license="GPL3+"
 depends=""
-makedepends=""
+makedepends="bash bison flex perl texinfo"
 install=""
 subpackages="$pkgname-dev $pkgname-doc"
-source="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/$pkgver/avr-binutils.tar.bz2
+source="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/3.4.5/avr-binutils-$pkgver.tar.bz2
 	"
 builddir="$srcdir/binutils"
 
 build() {
 	cd "$builddir"
-	CFLAGS="-DGCC_VERSION=4005" \
+	sed -i -e "s/#! \/bin\/sh/#!\/bin\/bash/" binutils/configure
+	CFLAGS="-Wno-shift-negative-value -Wno-unused-value" \
 	./configure \
 		--build=$CBUILD \
 		--host=$CHOST \
@@ -29,6 +30,7 @@ build() {
 		--with-gnu-ld \
 		--with-gnu-as \
 		--enable-install-libbfd \
+		--enable-ld=default \
 		--with-dwarf2 \
 		--disable-static \
 		--disable-gdb \
@@ -45,4 +47,4 @@ package() {
 	make DESTDIR="$pkgdir" install || return 1
 }
 
-sha512sums="a135f3f0650f2d00e667429b0bc9878bf2f6f925cb6fb27c6f172d8624997de00ade81f2d0a7f69cace1501333eb4c60f8cb5141347df4f69e89568600097953  avr-binutils.tar.bz2"
+sha512sums="d612266c0b4e1cce05e389153f702f98d9d8628f90c34bbc9b976cd460a4b9a2a400621e4a1bb93de342ab44267bfcebacfc0c2c640feced7abf4ac8d55c9f2d  avr-binutils-2.24.tar.bz2"

@@ -1,9 +1,9 @@
 # Contributor: Yoshinori Takesako <takesako@namazu.org>
 # Maintainer: Yoshinori Takesako <takesako@namazu.org>
 pkgname=gcc-avr
-pkgver=3.6.0
-pkgrel=1
-pkgdesc="GNU C Compiler - cross compiler for avr (GCC 5.4.0 with AVR)"
+pkgver=4.8.1
+pkgrel=0
+pkgdesc="GNU C Compiler - cross compiler for avr"
 url="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/"
 arch="all"
 license="GPL3+"
@@ -11,7 +11,8 @@ depends=""
 makedepends="binutils-avr gmp-dev mpfr-dev mpc1-dev zlib-dev bison flex"
 install=""
 subpackages="$pkgname-doc"
-source="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/$pkgver/avr-gcc.tar.bz2
+source="http://distribute.atmel.no/tools/opensource/Atmel-AVR-GNU-Toolchain/3.4.5/avr-gcc-$pkgver.tar.bz2
+	cfns.h.patch
 "
 builddir="$srcdir/gcc"
 
@@ -47,4 +48,5 @@ package() {
 	done
 }
 
-sha512sums="34ba36150a8007d8946fc907e712651fdd6e28123660331a90a57d85c01fe8ef4e0132a7d8dff15e32cf2996947125eb4fe5bf5104ab5aadb7b5733db1948412  avr-gcc.tar.bz2"
+sha512sums="45cae1f9588053d08bb4f51e87bf9e1b60e772928e9d579bf0c8409a2dd476d67b96f61e8749621882931e9c260efa2adecf0efb462b18d65a05afcf2b65d247  avr-gcc-4.8.1.tar.bz2
+f9766c2437912625fec6d6c41407a8a03e3cc11d62f6f13f223f82d4b4f6a2fdb1860bd31928d813d0d4ecc62af518e9af9a515f111cb9083ce8186cba5a5253  cfns.h.patch"
