@@ -1,6 +1,10 @@
-# make EXAMLE=DigisparkMouse
+# make EXAMPLE=DigiKeyboard
+# make EXAMPLE=DigiMouse
+# make EXAMPLE=DigiUSB
+# make EXAMPLE=Echo LDLINKS=
 
-EXAMPLE := DigisparkKeyboard
+EXAMPLE := DigiKeyboard
+LDLINKS := -L$(DIGISPARK_LIB_DIR) -ltiny -l$(EXAMPLE)
 
 DIGISPARK_INC_DIR := /usr/include/digispark
 DIGISPARK_LIB_DIR := /usr/lib/digispark
@@ -17,7 +21,7 @@ CFLAGS_PRO := -mmcu=attiny167 -DF_CPU=16000000L -DARDUINO=10805 -DARDUINO_AVR_DI
 CFLAGS := $(CFLAGS_OPT) $(CFLAGS_TINY)
 CXXFLAGS := -fno-exceptions $(CFLAGS)
 
-SRCS := a.cpp 
+SRCS := $(EXAMPLE).cpp 
 OBJS := $(addsuffix .o, $(basename $(SRCS)))
 
 ifdef TARGET
@@ -43,7 +47,7 @@ $(LIB_A): $(OBJS)
 	avr-ar rcs $(LIB_A) $(OBJS)
 
 $(EXAMPLE).elf: $(EXAMPLE).o
-	$(CC) -mmcu=attiny85 -Wl,--gc-sections -o $(EXAMPLE).elf $(EXAMPLE).o -L$(DIGISPARK_LIB_DIR) -ltiny -l$(EXAMPLE)
+	$(CC) -mmcu=attiny85 -Wl,--gc-sections -o $(EXAMPLE).elf $(EXAMPLE).o $(LDLINKS)
 
 $(EXAMPLE).eep: $(EXAMPLE).elf
 	avr-objcopy -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 $(EXAMPLE).elf $(EXAMPLE).eep
@@ -51,9 +55,11 @@ $(EXAMPLE).eep: $(EXAMPLE).elf
 $(EXAMPLE).hex: $(EXAMPLE).elf
 	avr-objcopy -O ihex -R .eeprom $(EXAMPLE).elf $(EXAMPLE).hex
 
+.PHONY: firmwareupgrade
 firmwareupgrade:
 	micronucleus --timeout 60 /usr/share/micronucleus/upgrade-t85_default.hex
 
+.PHONY: upload
 upload: $(EXAMPLE).hex
 	micronucleus --timeout 60 $(EXAMPLE).hex
 
