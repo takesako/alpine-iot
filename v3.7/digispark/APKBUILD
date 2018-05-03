@@ -11,41 +11,53 @@ depends=""
 makedepends="binutils-avr gcc-avr avr-libc"
 install=""
 subpackages=""
-source="DigistumpArduino-$pkgver.tar.gz::https://github.com/digistump/DigistumpArduino/archive/$pkgver.tar.gz
-	Makefile-tiny
-	Makefile-DigisparkKeyboard
+source="https://github.com/digistump/DigistumpArduino/releases/download/$pkgver/digistump-avr-$pkgver.zip
+	Makefile
 	"
 
-builddir="$srcdir/DigistumpArduino-$pkgver/digistump-avr"
+builddir="$srcdir/$pkgver"
 
 build() {
 	cd "$builddir"
-	CC="avr-gcc"
-	CXX="avr-g++"
-	CFLAGS="-g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=attiny85 -DF_CPU=16500000L -DARDUINO=10805 -DARDUINO_AVR_DIGISPARK -DARDUINO_ARCH_AVR -I../../cores/tiny"
 
-	cd variants/digispark
-	$CC $CFLAGS -c pins_arduino.c -o pins_arduino.o	
-	cd ../..
+	CFLAGS_OPT="-g -Os -w -fno-exceptions -ffunction-sections -fdata-sections"
+	CFLAGS_TINY="-mmcu=attiny85 -DF_CPU=16500000L -DARDUINO=10805 -DARDUINO_AVR_DIGISPARK -DARDUINO_ARCH_AVR"
+	CFLAGS_PRO="-mmcu=attiny167 -DF_CPU=16000000L -DARDUINO=10805 -DARDUINO_AVR_DIGISPARKPRO -DARDUINO_ARCH_AVR"
 
 	cd cores/tiny
-	make -f ../../../../Makefile-tiny CFLAGS="$CFLAGS -I."
+	cp -f ../../variants/digispark/pins_arduino.h .
+	make -f ../../../../Makefile \
+		CFLAGS="$CFLAGS_OPT $CFLAGS_TINY -I." \
+		SRCS="`echo *.cpp *.c`" \
+		TARGET="libtiny.a"
+	cd ../..
+
+	cd cores/pro
+	cp -f ../../variants/pro/pins_arduino.h .
+	make -f ../../../../Makefile \
+		CFLAGS="$CFLAGS_OPT $CFLAGS_PRO -I." \
+		SRCS="`echo *.cpp *.c`" \
+		TARGET="libpro.a"
 	cd ../..
 
 	cd libraries/DigisparkKeyboard
-	make -f ../../../../Makefile-DigisparkKeyboard CFLAGS="$CFLAGS"
-	cd ../../
+	make -f ../../../../Makefile \
+		CFLAGS="$CFLAGS_OPT $CFLAGS_TINY -I../../cores/tiny" \
+		SRCS="usbdrvasm.S osccal.c usbdrv.c" \
+		TARGET="libDigisparkKeyboard.a"
+	cd ../..
+
+	cd libraries/DigisparkMouse
+	make -f ../../../../Makefile \
+		CFLAGS="$CFLAGS_OPT $CFLAGS_TINY -I../../cores/tiny" \
+		SRCS="usbdrvasm.S osccal.c usbdrv.c" \
+		TARGET="libDigisparkMouse.a"
+	cd ../..
 }
 
 package() {
 	cd "$builddir"
 	mkdir -p "$pkgdir"/usr/lib/$pkgname/
-
-	cd variants/digispark
-	mkdir -p "$pkgdir"/usr/include/$pkgname/digispark
-	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/digispark pins_arduino.h
-	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname/ pins_arduino.o
-	cd ../..
 
 	cd cores/tiny
 	mkdir -p "$pkgdir"/usr/include/$pkgname/tiny
@@ -53,15 +65,26 @@ package() {
 	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname libtiny.a
 	cd ../..
 
+	cd cores/pro
+	mkdir -p "$pkgdir"/usr/include/$pkgname/pro
+	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/pro *.h
+	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname libpro.a
+	cd ../..
+
 	cd libraries/DigisparkKeyboard
 	mkdir -p "$pkgdir"/usr/include/$pkgname/DigisparkKeyboard
 	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/DigisparkKeyboard *.h
-	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname libDigisparkKeyboard.a *.o
+	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname libDigisparkKeyboard.a
+	cd ../..
+
+	cd libraries/DigisparkMouse
+	mkdir -p "$pkgdir"/usr/include/$pkgname/DigisparkMouse
+	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/DigisparkMouse *.h
+	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname libDigisparkMouse.a
 	cd ../..
 
 	# return 1
 }
 
-sha512sums="d1ac8dd5c8ee39fda2250e41a27ef2a3f184ea6f3a3de09e39d31f7f65dffc2ae95f58f048085fc57147a72e8289e86dc4948ae0145afc9307f8d43373de3d21  DigistumpArduino-1.6.7.tar.gz
-2aa9521dccd0ad70912304f56624941053d4f05e75993496bc13503d9247fc2691552e605093e2e3819f6d3ebd0aa7fea408a0eeeb0d75a7a9064b6be33d4032  Makefile-tiny
-41063dfdca2af97bd0a7362a428b66861faf34efc5ce1f1f65aab089b04e93bf52bdf918cc023d06470b9d84dc23db6f1f8c2e0eb603c053d0796bd30b406fbb  Makefile-DigisparkKeyboard"
+sha512sums="95b3780a155c8e9272313b59b629c43ca80131e7cd2d6d3b2fd8ec03cfb45d1ca11ea9332c05c568cc46244e1d0fa524b388272baf4f0cd839aa4fe362321e5d  digistump-avr-1.6.7.zip
+08f101508d304ffe395e0e8f7cd491c5573a59c0ffcd325cfdb2875b891656fb8fc1a7c1fb927a5f4807c6a4551bac17c3504c9901329be0723018896182d113  Makefile"
