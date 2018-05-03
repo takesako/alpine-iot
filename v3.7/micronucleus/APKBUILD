@@ -2,7 +2,7 @@
 # Maintainer: Yoshinori Takesako <takesako@namazu.org>
 pkgname=micronucleus
 pkgver=2.03
-pkgrel=1
+pkgrel=2
 pkgdesc="program upload tool for AVR ATtiny bootloader with minimal usb interface"
 url="https://github.com/micronucleus/micronucleus/"
 arch="all"
@@ -22,8 +22,11 @@ build() {
 }
 
 package() {
-	cd "$builddir/commandline"
-	install -D -m 755 micronucleus "$pkgdir"/usr/bin/micronucleus
+	cd "$builddir"
+	mkdir -p "$pkgdir"/usr/share/$pkgname
+	install -D -m 644 -t "$pkgdir"/usr/share/$pkgname firmware/releases/*.hex
+	install -D -m 644 -t "$pkgdir"/usr/share/$pkgname upgrade/releases/*.hex
+	install -D -m 755 commandline/micronucleus "$pkgdir"/usr/bin/micronucleus
 }
 
 sha512sums="94098d9c0d3637717683d8ffe3acac3a5f859ace980137474562bcb8ee29958d7bbe51aac82b79988c8d68c21dde6c952dcf45ea6f904c1aab2a17a18ef3d369  micronucleus-2.03.tar.gz"
