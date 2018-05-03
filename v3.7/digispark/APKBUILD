@@ -27,7 +27,8 @@ build() {
 	cd cores/tiny
 	cp -f ../../variants/digispark/pins_arduino.h .
 	make -f ../../../../Makefile \
-		CFLAGS="$CFLAGS_OPT $CFLAGS_TINY -I." \
+		CFLAGS="$CFLAGS_OPT $CFLAGS_TINY" \
+		INCLUDES="-I." \
 		SRCS="`echo *.cpp *.c`" \
 		TARGET="libtiny.a"
 	cd ../..
@@ -35,21 +36,24 @@ build() {
 	cd cores/pro
 	cp -f ../../variants/pro/pins_arduino.h .
 	make -f ../../../../Makefile \
-		CFLAGS="$CFLAGS_OPT $CFLAGS_PRO -I." \
+		CFLAGS="$CFLAGS_OPT $CFLAGS_PRO" \
+		INCLUDES="-I." \
 		SRCS="`echo *.cpp *.c`" \
 		TARGET="libpro.a"
 	cd ../..
 
 	cd libraries/DigisparkKeyboard
 	make -f ../../../../Makefile \
-		CFLAGS="$CFLAGS_OPT $CFLAGS_TINY -I../../cores/tiny" \
+		CFLAGS="$CFLAGS_OPT $CFLAGS_TINY" \
+		INCLUDES="-I../../cores/tiny" \
 		SRCS="usbdrvasm.S osccal.c usbdrv.c" \
 		TARGET="libDigisparkKeyboard.a"
 	cd ../..
 
 	cd libraries/DigisparkMouse
 	make -f ../../../../Makefile \
-		CFLAGS="$CFLAGS_OPT $CFLAGS_TINY -I../../cores/tiny" \
+		CFLAGS="$CFLAGS_OPT $CFLAGS_TINY" \
+		INCLUDES="-I../../cores/tiny" \
 		SRCS="usbdrvasm.S osccal.c usbdrv.c" \
 		TARGET="libDigisparkMouse.a"
 	cd ../..
@@ -58,17 +62,23 @@ build() {
 package() {
 	cd "$builddir"
 	mkdir -p "$pkgdir"/usr/lib/$pkgname/
+	mkdir -p "$pkgdir"/usr/lib/$pkgname/pro
+
+	examples="$pkgdir"/usr/share/$pkgname/examples
+	install -D -m 644 ../../Makefile $examples/Makefile
+	install -D -m 644 libraries/DigisparkKeyboard/examples/Keyboard/Keyboard.ino $examples/DigisparkKeyboard.cpp
+	install -D -m 644 libraries/DigisparkMouse/examples/Mouse/Mouse.ino $examples/DigisparkMouse.cpp
 
 	cd cores/tiny
-	mkdir -p "$pkgdir"/usr/include/$pkgname/tiny
-	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/tiny *.h
+	mkdir -p "$pkgdir"/usr/include/$pkgname
+	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname *.h
 	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname libtiny.a
 	cd ../..
 
 	cd cores/pro
 	mkdir -p "$pkgdir"/usr/include/$pkgname/pro
 	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/pro *.h
-	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname libpro.a
+	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname/pro libpro.a
 	cd ../..
 
 	cd libraries/DigisparkKeyboard
@@ -87,4 +97,4 @@ package() {
 }
 
 sha512sums="95b3780a155c8e9272313b59b629c43ca80131e7cd2d6d3b2fd8ec03cfb45d1ca11ea9332c05c568cc46244e1d0fa524b388272baf4f0cd839aa4fe362321e5d  digistump-avr-1.6.7.zip
-08f101508d304ffe395e0e8f7cd491c5573a59c0ffcd325cfdb2875b891656fb8fc1a7c1fb927a5f4807c6a4551bac17c3504c9901329be0723018896182d113  Makefile"
+463a7dcf93de8586564928fb1ea9999e741570f250c6f087237be7c82a448d9d8316e6c052cef00ec0650691f376cefab9de0cd76f528aba38066dc0e72b8ca7  Makefile"
