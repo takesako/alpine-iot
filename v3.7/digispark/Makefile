@@ -1,33 +1,33 @@
+# make EXAMPLE=Start LDLINKS=-ltiny
 # make EXAMPLE=DigiKeyboard
 # make EXAMPLE=DigiMouse
 # make EXAMPLE=DigiUSB
-# make EXAMPLE=Echo LDLINKS=
 
-EXAMPLE := DigiKeyboard
-LDLINKS := -L$(DIGISPARK_LIB_DIR) -ltiny -l$(EXAMPLE)
+EXAMPLE = DigiKeyboard
+LDLINKS = -ltiny -l$(EXAMPLE)
 
-DIGISPARK_INC_DIR := /usr/include/digispark
-DIGISPARK_LIB_DIR := /usr/lib/digispark
+DIGISPARK_INC_DIR = /usr/include/digispark
+DIGISPARK_LIB_DIR = /usr/lib/digispark
 
-INCLUDES := -I$(DIGISPARK_INC_DIR) -I$(DIGISPARK_INC_DIR)/$(EXAMPLE) 
+INCLUDES = -I$(DIGISPARK_INC_DIR) -I$(DIGISPARK_INC_DIR)/$(EXAMPLE) 
 
-CC := avr-gcc
-CXX := avr-g++
+CC  = avr-gcc
+CXX = avr-g++
 
-CFLAGS_OPT := -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections
-CFLAGS_TINY:= -mmcu=attiny85 -DF_CPU=16500000L -DARDUINO=10805 -DARDUINO_AVR_DIGISPARK -DARDUINO_ARCH_AVR
-CFLAGS_PRO := -mmcu=attiny167 -DF_CPU=16000000L -DARDUINO=10805 -DARDUINO_AVR_DIGISPARKPRO -DARDUINO_ARCH_AVR
+CFLAGS_OPT = -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections
+CFLAGS_TINY= -mmcu=attiny85 -DF_CPU=16500000L -DARDUINO=10805 -DARDUINO_AVR_DIGISPARK -DARDUINO_ARCH_AVR
+CFLAGS_PRO = -mmcu=attiny167 -DF_CPU=16000000L -DARDUINO=10805 -DARDUINO_AVR_DIGISPARKPRO -DARDUINO_ARCH_AVR
 
-CFLAGS := $(CFLAGS_OPT) $(CFLAGS_TINY)
-CXXFLAGS := -fno-exceptions $(CFLAGS)
+CFLAGS = $(CFLAGS_OPT) $(CFLAGS_TINY)
+CXXFLAGS = -fno-exceptions $(CFLAGS)
 
-SRCS := $(EXAMPLE).cpp 
-OBJS := $(addsuffix .o, $(basename $(SRCS)))
+SRCS = $(EXAMPLE).cpp 
+OBJS = $(addsuffix .o, $(basename $(SRCS)))
 
 ifdef TARGET
-  LIB_A := $(TARGET)
+  LIB_A = $(TARGET)
 else
-  TARGET := $(EXAMPLE).o $(EXAMPLE).elf $(EXAMPLE).eep $(EXAMPLE).hex
+  TARGET = $(EXAMPLE).o $(EXAMPLE).elf $(EXAMPLE).eep $(EXAMPLE).hex
 endif
 
 .PHONY: all
@@ -47,7 +47,7 @@ $(LIB_A): $(OBJS)
 	avr-ar rcs $(LIB_A) $(OBJS)
 
 $(EXAMPLE).elf: $(EXAMPLE).o
-	$(CC) -mmcu=attiny85 -Wl,--gc-sections -o $(EXAMPLE).elf $(EXAMPLE).o $(LDLINKS)
+	$(CC) -mmcu=attiny85 -Wl,--gc-sections -o $(EXAMPLE).elf $(EXAMPLE).o -L$(DIGISPARK_LIB_DIR) $(LDLINKS)
 
 $(EXAMPLE).eep: $(EXAMPLE).elf
 	avr-objcopy -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 $(EXAMPLE).elf $(EXAMPLE).eep
