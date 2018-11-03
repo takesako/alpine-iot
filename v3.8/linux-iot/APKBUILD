@@ -3,7 +3,7 @@
 
 _flavor=iot
 pkgname=linux-${_flavor}
-pkgver=4.14.52
+pkgver=4.14.78
 case $pkgver in
 	*.*.*)	_kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
@@ -18,8 +18,6 @@ options="!strip"
 _config=${config:-config-iot.${CARCH}}
 install=
 source="https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz
-	0001-HID-apple-fix-Fn-key-Magic-Keyboard-on-bluetooth.patch
-
 	config-iot.x86
 	"
 subpackages="$pkgname-dev:_dev:$CBUILD_ARCH"
@@ -193,6 +191,5 @@ _dev() {
 }
 
 sha512sums="77e43a02d766c3d73b7e25c4aafb2e931d6b16e870510c22cef0cdb05c3acb7952b8908ebad12b10ef982c6efbe286364b1544586e715cf38390e483927904d8  linux-4.14.tar.xz
-5373728be2b507c3db5e042e1d768740df7965078868afdc46418b1adc4cae3d8f9f1aedb59975a0f2acf8754340499354fcf97c503397a5d9886ccc9689b782  0001-HID-apple-fix-Fn-key-Magic-Keyboard-on-bluetooth.patch
-2d3cd0a4acb12d61fce82d7bbdadb13c07fcb6754252e5c6a49da0a3dc055043e9a34b05c4bb3a4139488be9894b092cf3d289f89a6f8539bbf0c482737ee679  config-iot.x86
-720b310700337d7c8b77b78592aae6c8d9bd08cb4da0437110ddcdf4e9e8146367293a2f2d94325787b5f201a09847badb50657082426212b610f6993eefc536  patch-4.14.52.xz"
+87f75c12e3c795349f3f94fed6a6734921a0f49849cd5796585b77990f455e99a0bfe2daaf63a8f9ee28832a1b52b6e5f9956341ccdff3544372d44e9a365b5e  config-iot.x86
+bf0c0cbe9ee7ddfee0d8a70656e6db5979d1928c7aad917039c471ad6e2b049fe9d0f59161dab5ccfb9180263d2630cd6df735524b5886f0d05f709cb30b11bd  patch-4.14.78.xz"
