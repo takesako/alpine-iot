@@ -2,13 +2,13 @@
 # Maintainer: Yoshinori Takesako <takesako@namazu.org>
 pkgname=micronucleus
 pkgver=2.04
-pkgrel=1
+pkgrel=2
 pkgdesc="program upload tool for AVR ATtiny bootloader with minimal usb interface"
 url="https://github.com/micronucleus/micronucleus/"
 arch="all"
 license="GPL2+"
 depends="libusb-compat"
-makedepends="libusb-compat-dev"
+makedepends="libusb-compat-dev ruby"
 install=""
 subpackages=""
 _commit="$pkgver"
@@ -20,6 +20,8 @@ build() {
 	cd "$builddir/commandline"
 	make library || return 1
 	make micronucleus || return 1
+	cd ../upgrade
+	sh MAKE_RELEASES.sh
 }
 
 package() {
