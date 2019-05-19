@@ -3,14 +3,14 @@
 pkgname=sdcc
 pkgver=3.9.0
 pkgrel=0
-pkgdesc="Small Device C Compiler for Intel mcs51"
+pkgdesc="Small Device C Compiler for mcs51"
 url="https://sourceforge.net/projects/sdcc/"
 arch="all"
 license="GPL2"
 depends=""
 makedepends="bison flex boost-dev zlib-dev"
 install=""
-subpackages="$pkgname-dev $pkgname-doc"
+subpackages="$pkgname-dev"
 source="https://downloads.sourceforge.net/$pkgname/$pkgver/$pkgname-src-$pkgver.tar.bz2"
 builddir="$srcdir/$pkgname-$pkgver"
 
@@ -19,7 +19,6 @@ prepare() {
 }
 
 build() {
-	# cd "$builddir"
 	mkdir -p "$builddir/build"
 	cd "$builddir/build"
 	../configure \
@@ -29,6 +28,7 @@ build() {
 		--sysconfdir=/etc \
 		--mandir=/usr/share/man \
 		--localstatedir=/var \
+		--enable-mcs51-port \
 		--disable-z80-port \
 		--disable-z180-port \
 		--disable-r2k-port \
@@ -56,6 +56,9 @@ package() {
 	cd "$builddir/build"
 	mkdir -p "$pkgdir"
 	make DESTDIR=$pkgdir install || return 1	
+	rm -rf "$pkgdir"/usr/share/doc
+	rm -rf "$pkgdir"/usr/share/man
+	rm -rf "$pkgdir"/usr/share/sdcc/lib/src
 }
 
 sha512sums="513f6388c7005e6722ad5220cbd70da04f5848896fb42738b1536fe4fa44906e2d2efe0e3e9f68e0c224e0fd2dedd75663bf382e389392ef038b2ae5f16339b0  sdcc-src-3.9.0.tar.bz2"
