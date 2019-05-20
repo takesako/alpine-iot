@@ -16,8 +16,7 @@ builddir="$srcdir/fxload-2008_10_13"
 
 build() {
 	cd "$builddir"
-	make CFLAGS="$CFLAGS"
-	set
+	make CFLAGS="$CFLAGS -DFXLOAD_VERSION=\\\"2008_10_13-ww3\\\""
 }
 
 check() {
