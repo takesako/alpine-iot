@@ -52,10 +52,15 @@ build() {
 		make || return 1
 }
 
+check() {
+	cd "$builddir/build"
+	make check	
+}
+
 package() {
 	cd "$builddir/build"
 	mkdir -p "$pkgdir"
-	make DESTDIR=$pkgdir install || return 1	
+	make DESTDIR="$pkgdir" install || return 1	
 	rm -rf "$pkgdir"/usr/share/doc
 	rm -rf "$pkgdir"/usr/share/man
 	rm -rf "$pkgdir"/usr/share/sdcc/lib/src
