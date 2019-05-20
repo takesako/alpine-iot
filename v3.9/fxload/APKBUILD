@@ -1,0 +1,33 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=fxload
+pkgver=20081013
+pkgrel=0
+pkgdesc="Firmware download to EZ-USB devices"
+url="https://www.triplespark.net/elec/periph/USB-FX2/eeprom/"
+arch="all"
+license="GPL2"
+depends=""
+makedepends=""
+install=""
+subpackages="$pkgname-doc"
+source="https://www.triplespark.net/elec/periph/USB-FX2/eeprom/fxload-full-2008_10_13-ww3.tar.gz"
+builddir="$srcdir/fxload-2008_10_13"
+
+build() {
+	cd "$builddir"
+	make CFLAGS="$CFLAGS"
+	set
+}
+
+check() {
+	return 0
+}
+
+package() {
+	cd "$builddir"
+	install -D -m 755 fxload "$pkgdir"/usr/bin/fxload
+	install -D -m 644 fxload.8 "$pkgdir"/usr/share/man/man8/fxload.8
+}
+
+sha512sums="19482f636e0719a1e25c01f22f82fe22066169f797efb122556df6193515b577562fd858b500a09a0cafe7b36cef1821c7f014a24bd6f4a641cf6d40dfe3e326  fxload-full-2008_10_13-ww3.tar.gz"
