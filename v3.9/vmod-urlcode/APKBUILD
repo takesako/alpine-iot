@@ -1,0 +1,46 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=vmod-urlcode
+pkgver=1.0
+pkgrel=1
+pkgdesc="Varnish module for encoding/decoding to/from percent encoding (RFC3986)"
+url="https://github.com/fastly/libvmod-urlcode"
+arch="all"
+license="BSD"
+depends=""
+makedepends="py-docutils libtool automake autoconf varnish varnish-libs varnish-dev"
+install=""
+subpackages=""
+_commit="ee2a24f8bc80a214ab664371e82dc3a64c3475e7"
+source="libvmod-urlcode-$_commit.tar.gz::https://github.com/fastly/libvmod-urlcode/archive/$_commit.tar.gz
+	vmod_urlcode.c.patch
+	"
+builddir="$srcdir/libvmod-urlcode-$_commit"
+
+build() {
+	cd "$builddir"
+	libtoolize
+	aclocal
+	autoheader
+	automake -a -c
+	autoconf
+	./configure \
+		--build="$CBUILD" \
+		--host="$CHOST" \
+		--disable-dependency-tracking
+	make
+}
+
+check() {
+	cd "$builddir"
+	make check
+}
+
+package() {
+	cd "$builddir"
+	mkdir -p "$pkgdir"/usr/lib/varnish/vmods
+	install -D -m 755 -t "$pkgdir"/usr/lib/varnish/vmods src/.libs/libvmod_urlcode.so
+}
+
+sha512sums="3f75e47d445288e8e7457b0ca6e88550227d8140261d05d7c71994c6321842fca4037a7761c14545e68391f1b59d6eeb444be2ce175eed3ccdb1a30cdfbf9144  libvmod-urlcode-ee2a24f8bc80a214ab664371e82dc3a64c3475e7.tar.gz
+3a302d8f9de776180dcab67e73a7fedae8490b2c2c645fceaaafabd1b32a2ebba32cbfc796b9b1144eed4ebdb08d485970767919f278b83ea12872266dba7ffd  vmod_urlcode.c.patch"

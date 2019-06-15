@@ -1,0 +1,10 @@
+--- old/src/vmod_urlcode.c
++++ new/src/vmod_urlcode.c
+@@ -1,6 +1,6 @@
+ #include <stdlib.h>
++#include <stdarg.h>
+ 
+-#include "vrt.h"
+ #include "cache/cache.h"
+ 
+ #include "vcc_if.h"
