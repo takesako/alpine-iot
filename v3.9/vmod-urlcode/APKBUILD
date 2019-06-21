@@ -8,22 +8,18 @@ url="https://github.com/fastly/libvmod-urlcode"
 arch="all"
 license="BSD"
 depends=""
-makedepends="py-docutils libtool automake autoconf varnish varnish-libs varnish-dev"
+makedepends="python py-docutils libtool automake autoconf varnish varnish-libs varnish-dev"
 install=""
 subpackages=""
 _commit="ee2a24f8bc80a214ab664371e82dc3a64c3475e7"
-source="libvmod-urlcode-$_commit.tar.gz::https://github.com/fastly/libvmod-urlcode/archive/$_commit.tar.gz
+source="lib$pkgname-$_commit.tar.gz::https://github.com/fastly/libvmod-urlcode/archive/$_commit.tar.gz
 	vmod_urlcode.c.patch
 	"
-builddir="$srcdir/libvmod-urlcode-$_commit"
+builddir="$srcdir/lib$pkgname-$_commit"
 
 build() {
 	cd "$builddir"
-	libtoolize
-	aclocal
-	autoheader
-	automake -a -c
-	autoconf
+	sh autogen.sh	
 	./configure \
 		--build="$CBUILD" \
 		--host="$CHOST" \

@@ -8,7 +8,7 @@ url="https://github.com/xcir/libvmod-parseform"
 arch="all"
 license="BSD"
 depends=""
-makedepends="py-docutils libtool automake autoconf varnish varnish-libs varnish-dev"
+makedepends="python py-docutils libtool automake autoconf varnish varnish-libs varnish-dev"
 install=""
 subpackages=""
 source="lib$pkgname-$pkgver.tar.gz::https://github.com/xcir/libvmod-parseform/archive/v$pkgver.tar.gz
@@ -17,11 +17,7 @@ builddir="$srcdir/lib$pkgname-$pkgver"
 
 build() {
 	cd "$builddir"
-	libtoolize
-	aclocal
-	autoheader
-	automake -a -c
-	autoconf
+	sh autogen.sh
 	./configure \
 		--build="$CBUILD" \
 		--host="$CHOST" \
