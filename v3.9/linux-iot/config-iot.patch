@@ -1,9 +1,12 @@
 --- config-virt.x86
 +++ config-iot.x86
-@@ -3 +3 @@
+@@ -2,3 +2,3 @@
+ # Automatically generated file; DO NOT EDIT.
 -# Linux/x86 4.19.50 Kernel Configuration
 +# Linux/x86 4.19.58 Kernel Configuration
-@@ -2922 +2922,92 @@
+ #
+@@ -2921,5 +2921,106 @@
+ # CONFIG_LOGO is not set
 -# CONFIG_SOUND is not set
 +CONFIG_SOUND=m
 +CONFIG_SOUND_OSS_CORE=y
@@ -97,7 +100,8 @@
 +# CONFIG_SND_VIRTUOSO is not set
 +# CONFIG_SND_VX222 is not set
 +# CONFIG_SND_YMFPCI is not set
-@@ -2924,0 +3016,10 @@
+ 
+ #
 +# HD-Audio
 +#
 +# CONFIG_SND_HDA_INTEL is not set
@@ -108,9 +112,13 @@
 +CONFIG_AC97_BUS=m
 +
 +#
-@@ -2946,0 +3048 @@
+ # HID support
+@@ -2946,2 +3047,3 @@
+ # CONFIG_HID_COUGAR is not set
 +# CONFIG_HID_PRODIKEYS is not set
-@@ -3115 +3217,53 @@
+ # CONFIG_HID_CMEDIA is not set
+@@ -3114,3 +3216,55 @@
+ #
 -# CONFIG_USB_SERIAL is not set
 +CONFIG_USB_SERIAL=m
 +CONFIG_USB_SERIAL_GENERIC=y
@@ -165,6 +173,9 @@
 +# CONFIG_USB_SERIAL_QT2 is not set
 +# CONFIG_USB_SERIAL_UPD78F0730 is not set
 +CONFIG_USB_SERIAL_DEBUG=m
-@@ -3560 +3714 @@
+ 
+@@ -3559,3 +3713,3 @@
+ CONFIG_PROC_FS=y
 -# CONFIG_PROC_KCORE is not set
 +CONFIG_PROC_KCORE=y
+ CONFIG_PROC_SYSCTL=y
