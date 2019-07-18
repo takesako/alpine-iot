@@ -1,5 +1,8 @@
 --- config-virt.x86
 +++ config-iot.x86
+@@ -3 +3 @@
+-# Linux/x86 4.19.50 Kernel Configuration
++# Linux/x86 4.19.58 Kernel Configuration
 @@ -2922 +2922,92 @@
 -# CONFIG_SOUND is not set
 +CONFIG_SOUND=m
