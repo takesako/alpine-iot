@@ -1,9 +1,10 @@
 # Contributor: Yoshinori Takesako <takesako@namazu.org>
 # Maintainer: Yoshinori Takesako <takesako@namazu.org>
 pkgname=avrdude
-pkgver=6.3
+verbase=6.3
 reporev=1429
-pkgrel=$reporev
+pkgver=6.3_svn20190718
+pkgrel=0
 pkgdesc="AVRDUDE - AVR Downloader/UploaDEr"
 url="http://www.nongnu.org/avrdude/"
 arch="all"
@@ -13,19 +14,14 @@ makedepends="libtool automake autoconf m4 flex bison linux-headers libelf-dev li
 install=""
 subpackages="$pkgname-dev $pkgname-doc"
 svnurl="http://svn.savannah.nongnu.org/svn/avrdude/trunk/avrdude/"
-source="http://1ot.jp/alpine-iot/dist/$pkgname-$pkgver-r$pkgrel.tar.gz
+disturl="1ot.jp:packages/dist/"
+source="http://1ot.jp/alpine-iot/dist/$pkgname-$pkgver.tar.gz
 	avrdude-6.3-libusb_exit.patch
 	"
-builddir="$srcdir/$pkgname-$pkgver-r$pkgrel"
+builddir="$srcdir/$pkgname-$pkgver"
 
-svndist() {
-	abuild snapshot
-	cd "$srcdir"
-	mv $pkgname-0_svn*/ $pkgname-$pkgver-r$pkgrel/
-	rm -rf $pkgname-$pkgver-r$pkgrel/.svn
-	tar zcvf $pkgname-$pkgver-r$pkgrel.tar.gz $pkgname-$pkgver-r$pkgrel/
-	scp -P 3333 $pkgname-$pkgver-r$pkgrel.tar.gz 1ot.jp:packages/dist/	
-}
+# env RSYNC_RSH="ssh -p 3333" abuild snapshot
+# abuild checksum && abuild -r
 
 build() {
 	cd "$builddir"
@@ -48,5 +44,5 @@ package() {
 	make DESTDIR="$pkgdir" install || return 1
 }
 
-sha512sums="0742c9c89c13013be95a61067ef17c4dd1b0bb945e2725af54ace713c210c75d99f3b7441c8b47d4b708428b908b108430c3ff7e5e1388f2648f1b9736a7e357  avrdude-6.3-r1429.tar.gz
+sha512sums="bfef1ae219ca63becdf4633279caecd7fc41bdabd4503326d0257b92362a9de57abbb924aa98b32ff813a7c6c6272f88c99fbd23a73d85eaece91845dfba1a7d  avrdude-6.3_svn20190718.tar.gz
 ed929cd700b54a69ea5f860b78f549559548e65b999184b19aace4f4655d6dbbcee50aba468387a44184bd29ac63737efe68a2278cdb49537bac94e5a7abba2d  avrdude-6.3-libusb_exit.patch"
