@@ -161,7 +161,7 @@ _dev() {
 	echo "-$pkgrel-$_flavor" > "$dir"/localversion-alpine \
 		|| return 1
 	make -j1 -C "$srcdir"/linux-$_kernver O="$dir" ARCH="$_carch" HOSTCC="$HOSTCC" \
-		silentoldconfig prepare modules_prepare scripts
+		silentoldconfig prepare modules_prepare scripts < /dev/null
 
 	# remove the stuff that points to real sources. we want 3rd party
 	# modules to believe this is the soruces
@@ -191,5 +191,5 @@ _dev() {
 }
 
 sha512sums="ab67cc746b375a8b135e8b23e35e1d6787930d19b3c26b2679787d62951cbdbc3bb66f8ededeb9b890e5008b2459397f9018f1a6772fdef67780b06a4cb9f6f4  linux-4.19.tar.xz
-52dd56aa5ab05859153a6ed51b7f7421eb3d70137292fdb92567f25aabaf132cb7b5048256f35ac0ed9ab3d54a17033d34fefa76a884fb98d90cc813db438586  config-iot.x86
+31600ce4851e44b990f553f00b09986261494c5be48aab8015a6e9227dbaea8e1cf724e4b9b97636f9b5e6e05dbdb481a69a6cb0e48e832e84fe151edff8192c  config-iot.x86
 eda5b68b2886c8be0a51e0d29fa831796263ba77b7bfcd8868874d02b00616be49a774f287e5d25165f704c82693df0a620fd7c661a352253693fe9b5de8f87d  patch-4.19.58.xz"
