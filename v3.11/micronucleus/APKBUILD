@@ -1,0 +1,35 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=micronucleus
+pkgver=2.04
+pkgrel=2
+pkgdesc="program upload tool for AVR ATtiny bootloader with minimal usb interface"
+url="https://github.com/micronucleus/micronucleus/"
+arch="all"
+license="GPL2+"
+depends="libusb-compat"
+makedepends="libusb-compat-dev ruby"
+install=""
+subpackages=""
+_commit="$pkgver"
+source="$pkgname-$_commit.tar.gz::https://github.com/micronucleus/micronucleus/archive/$_commit.tar.gz
+	"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cd "$builddir/commandline"
+	make library || return 1
+	make micronucleus || return 1
+	cd ../upgrade
+	sh MAKE_RELEASES.sh
+}
+
+package() {
+	cd "$builddir"
+	mkdir -p "$pkgdir"/usr/share/$pkgname
+	install -D -m 644 -t "$pkgdir"/usr/share/$pkgname firmware/releases/*.hex
+	install -D -m 644 -t "$pkgdir"/usr/share/$pkgname upgrade/releases/*.hex
+	install -D -m 755 commandline/micronucleus "$pkgdir"/usr/bin/micronucleus
+}
+
+sha512sums="56a2a03cc639b0fab425e96e68fc9eb56eb68c334f4ba2a94e1436fec9cbe4618117421a6f06d461b1fac4ebc90f5c75f010623360e3ae4b8bc9be55aeb1487f  micronucleus-2.04.tar.gz"
