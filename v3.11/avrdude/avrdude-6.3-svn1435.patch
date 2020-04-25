@@ -1,0 +1,20 @@
+--- avrdude-6.3-orig/ft245r.c
++++ avrdude-6.3/ft245r.c
+@@ -673,7 +673,7 @@
+ cleanup:
+     ftdi_usb_close(handle);
+ cleanup_no_usb:
+-    ftdi_deinit (handle);
++    // ftdi_deinit (handle);
+     free(handle);
+     handle = NULL;
+     return -1;
+@@ -696,7 +696,7 @@
+         }
+ 
+         pthread_join(readerthread, NULL);
+-        ftdi_deinit (handle);
++        // ftdi_deinit (handle);
+         free(handle);
+         handle = NULL;
+     }
