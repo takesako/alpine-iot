@@ -31,22 +31,13 @@
  			/*timeout=*/1000/*msec*/);
 --- cycfx2prog-0.47/cycfx2dev.h
 +++ cycfx2prog-0.47-new/cycfx2dev.h
-@@ -64,7 +64,7 @@
- 		int ProgramBinFile(const char *path,size_t start_addr=0);
- 		// Download/write a chunk of ram into the device. 
- 		int WriteRAM(size_t addr,const unsigned char *data,size_t nbytes);
--		// Read a portion of ram from the device. 
-+		// Download/write a chunk of eeprom into the device. 
- 		int ReadRAM(size_t addr,unsigned char *data,size_t nbytes);
- 		
- 		// Put the Cypress FX2 into reset or release reset. 
 @@ -98,6 +98,9 @@
  		int CtrlMsg(unsigned char requesttype,
  			unsigned char request,int value,int index,
  			const unsigned char *ctl_buf=NULL,size_t ctl_buf_size=0);
 +
-+		// EEPROM or RAM
-+		int AX = 0xA0;
++		// set AX to 0xa2 (small EEPROM) or 0xa9 (large EEPROM)
++		int AX = 0xa0; // default is 0xa0 (internal RAM)
  };
  
  #endif  /* _CYCFX2PROG_CYCFX2DEVICE_ */
@@ -57,7 +48,7 @@ Only in cycfx2prog-0.47-new/: cycfx2prog
  		"  delay:NN       make a delay for NN msec\n"
  		"  set:ADR,VAL    set byte at address ADR to value VAL\n"
  		"  dram:ADR,LEN   dump RAM content: LEN bytes starting at ADR\n"
-+		"  eeprom:AX      set EEPROM request AX to 0xa9 or 0xa2\n"
++		"  eeprom:AX      set AX to 0xa2 (small EEPROM), 0xa9 (large), 0x90 (RAM)\n"
  		"  dbulk:EP,L[,N] bulk read N (default: 1) buffers of size L from endpoint\n"
  		"                 EP (1,2,4,6,8) and dump them; L<0 to allow short reads\n"
  		"  sbulk:EP,STR   send string STR as bulk message to endpoint EP (1,2,4,6,8)\n"
