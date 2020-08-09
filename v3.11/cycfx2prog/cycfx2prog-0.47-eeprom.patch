@@ -1,0 +1,89 @@
+--- cycfx2prog-0.47/Makefile
++++ cycfx2prog-0.47-new/Makefile
+@@ -9,7 +9,7 @@
+ 
+ # NOTE: Also add sources to the "dist:" target!
+ cycfx2prog: cycfx2prog.o cycfx2dev.o
+-	$(CC) $(LDFLAGS) cycfx2prog.o cycfx2dev.o -o cycfx2prog
++	$(CC) cycfx2prog.o cycfx2dev.o -o cycfx2prog $(LDFLAGS)
+ 
+ clean:
+ 	-rm -f *.o
+--- cycfx2prog-0.47/cycfx2dev.cc
++++ cycfx2prog-0.47-new/cycfx2dev.cc
+@@ -328,7 +328,7 @@
+ 		size_t bs=dend-d;
+ 		if(bs>chunk_size)  bs=chunk_size;
+ 		size_t dl_addr=addr+(d-data);
+-		int rv=usb_control_msg(usbhdl,0x40,0xa0,
++		int rv=usb_control_msg(usbhdl,0x40,AX,
+ 			/*addr=*/dl_addr,0,
+ 			/*buf=*/(char*)d,/*size=*/bs,
+ 			/*timeout=*/1000/*msec*/);
+@@ -358,7 +358,7 @@
+ 		size_t bs=dend-d;
+ 		if(bs>chunk_size)  bs=chunk_size;
+ 		size_t rd_addr=addr+(d-data);
+-		int rv=usb_control_msg(usbhdl,0xc0,0xa0,
++		int rv=usb_control_msg(usbhdl,0xc0,AX,
+ 			/*addr=*/rd_addr,0,
+ 			/*buf=*/(char*)d,/*size=*/bs,
+ 			/*timeout=*/1000/*msec*/);
+--- cycfx2prog-0.47/cycfx2dev.h
++++ cycfx2prog-0.47-new/cycfx2dev.h
+@@ -64,7 +64,7 @@
+ 		int ProgramBinFile(const char *path,size_t start_addr=0);
+ 		// Download/write a chunk of ram into the device. 
+ 		int WriteRAM(size_t addr,const unsigned char *data,size_t nbytes);
+-		// Read a portion of ram from the device. 
++		// Download/write a chunk of eeprom into the device. 
+ 		int ReadRAM(size_t addr,unsigned char *data,size_t nbytes);
+ 		
+ 		// Put the Cypress FX2 into reset or release reset. 
+@@ -98,6 +98,9 @@
+ 		int CtrlMsg(unsigned char requesttype,
+ 			unsigned char request,int value,int index,
+ 			const unsigned char *ctl_buf=NULL,size_t ctl_buf_size=0);
++
++		// EEPROM or RAM
++		int AX = 0xA0;
+ };
+ 
+ #endif  /* _CYCFX2PROG_CYCFX2DEVICE_ */
+Only in cycfx2prog-0.47-new/: cycfx2prog
+--- cycfx2prog-0.47/cycfx2prog.cc
++++ cycfx2prog-0.47-new/cycfx2prog.cc
+@@ -156,6 +156,7 @@
+ 		"  delay:NN       make a delay for NN msec\n"
+ 		"  set:ADR,VAL    set byte at address ADR to value VAL\n"
+ 		"  dram:ADR,LEN   dump RAM content: LEN bytes starting at ADR\n"
++		"  eeprom:AX      set EEPROM request AX to 0xa9 or 0xa2\n"
+ 		"  dbulk:EP,L[,N] bulk read N (default: 1) buffers of size L from endpoint\n"
+ 		"                 EP (1,2,4,6,8) and dump them; L<0 to allow short reads\n"
+ 		"  sbulk:EP,STR   send string STR as bulk message to endpoint EP (1,2,4,6,8)\n"
+@@ -314,8 +315,10 @@
+ 		{
+ 			// NOTE: We put the 8051 into reset prior to downloading but 
+ 			//       we won't put it out of reset afterwards. 
+-			fprintf(stderr,"Putting 8051 into reset.\n");
+-			errors+=cycfx2.FX2Reset(/*running=*/0);
++			if (cycfx2.AX == 0xA0) {
++				fprintf(stderr,"Putting 8051 into reset.\n");
++				errors+=cycfx2.FX2Reset(/*running=*/0);
++			}
+ 			
+ 			const char *file=a[0];
+ 			if(!file)
+@@ -354,6 +357,12 @@
+ 			errors+=cycfx2.ReadRAM(adr,buf,len);
+ 			HexDumpBuffer(stdout,buf,len,/*with_ascii=*/1);
+ 			if(buf)  free(buf);
++		}
++		else if(!strcmp(cmd,"eeprom"))
++		{
++			if(a[0] && *a[0])
++			{  cycfx2.AX=strtol(a[0],NULL,0);  }
++			fprintf(stderr,"EEPROM: set AX to 0x%2x\n", cycfx2.AX);
+ 		}
+ 		else if(!strcmp(cmd,"set"))
+ 		{
