@@ -29,6 +29,24 @@
  			/*addr=*/rd_addr,0,
  			/*buf=*/(char*)d,/*size=*/bs,
  			/*timeout=*/1000/*msec*/);
+@@ -488,7 +488,7 @@
+ int CypressFX2Device::ProgramBinFile(const char *path,size_t start_addr)
+ {
+ 	if(!IsOpen())
+-	{  fprintf(stderr,"ProgramIHexFile: Not connected!\n");  return(1);  }
++	{  fprintf(stderr,"ProgramBinFile: Not connected!\n");  return(1);  }
+ 	
+ 	int fd=::open(path,O_RDONLY);
+ 	if(fd<0)
+@@ -496,7 +496,7 @@
+ 		return(2);  }
+ 	
+ 	int n_errors=0;
+-	const size_t buflen=1024;
++	const size_t buflen=64;
+ 	char buf[buflen];
+ 	size_t addr=start_addr;
+ 	for(;;)
 --- cycfx2prog-0.47/cycfx2dev.h
 +++ cycfx2prog-0.47-new/cycfx2dev.h
 @@ -98,6 +98,9 @@
@@ -41,40 +59,3 @@
  };
  
  #endif  /* _CYCFX2PROG_CYCFX2DEVICE_ */
-Only in cycfx2prog-0.47-new/: cycfx2prog
---- cycfx2prog-0.47/cycfx2prog.cc
-+++ cycfx2prog-0.47-new/cycfx2prog.cc
-@@ -156,6 +156,7 @@
- 		"  delay:NN       make a delay for NN msec\n"
- 		"  set:ADR,VAL    set byte at address ADR to value VAL\n"
- 		"  dram:ADR,LEN   dump RAM content: LEN bytes starting at ADR\n"
-+		"  eeprom:AX      set AX to 0xa2 (small EEPROM), 0xa9 (large), 0x90 (RAM)\n"
- 		"  dbulk:EP,L[,N] bulk read N (default: 1) buffers of size L from endpoint\n"
- 		"                 EP (1,2,4,6,8) and dump them; L<0 to allow short reads\n"
- 		"  sbulk:EP,STR   send string STR as bulk message to endpoint EP (1,2,4,6,8)\n"
-@@ -314,8 +315,10 @@
- 		{
- 			// NOTE: We put the 8051 into reset prior to downloading but 
- 			//       we won't put it out of reset afterwards. 
--			fprintf(stderr,"Putting 8051 into reset.\n");
--			errors+=cycfx2.FX2Reset(/*running=*/0);
-+			if (cycfx2.AX == 0xA0) {
-+				fprintf(stderr,"Putting 8051 into reset.\n");
-+				errors+=cycfx2.FX2Reset(/*running=*/0);
-+			}
- 			
- 			const char *file=a[0];
- 			if(!file)
-@@ -354,6 +357,12 @@
- 			errors+=cycfx2.ReadRAM(adr,buf,len);
- 			HexDumpBuffer(stdout,buf,len,/*with_ascii=*/1);
- 			if(buf)  free(buf);
-+		}
-+		else if(!strcmp(cmd,"eeprom"))
-+		{
-+			if(a[0] && *a[0])
-+			{  cycfx2.AX=strtol(a[0],NULL,0);  }
-+			fprintf(stderr,"EEPROM: set AX to 0x%2x\n", cycfx2.AX);
- 		}
- 		else if(!strcmp(cmd,"set"))
- 		{
