@@ -1,0 +1,70 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=sdcc
+pkgver=4.1.0
+pkgrel=0
+pkgdesc="Small Device C Compiler for mcs51"
+url="https://sourceforge.net/projects/sdcc/"
+arch="all"
+license="GPL2"
+depends=""
+makedepends="bison flex boost-dev zlib-dev texinfo"
+install=""
+subpackages="$pkgname-dev"
+source="https://downloads.sourceforge.net/$pkgname/$pkgver/$pkgname-src-$pkgver.tar.bz2"
+builddir="$srcdir/$pkgname"
+
+prepare() {
+	update_config_sub || return 1 
+}
+
+build() {
+	mkdir -p "$builddir/build"
+	cd "$builddir/build"
+	../configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--enable-mcs51-port \
+		--disable-z80-port \
+		--disable-z180-port \
+		--disable-r2k-port \
+		--disable-r3ka-port \
+		--disable-gbz80-port \
+		--disable-tlcs90-port \
+		--disable-ez80_z80-port \
+		--disable-ds390-port \
+		--disable-ds400-port \
+		--disable-pic14-port \
+		--disable-pic16-port \
+		--disable-hc08-port \
+		--disable-s08-port \
+		--disable-stm8-port \
+		--disable-pdk13-port \
+		--disable-pdk14-port \
+		--disable-pdk15-port \
+		--disable-pdk16-port \
+		--disable-non-free \
+		--disable-doc \
+		|| return 1
+		make || return 1
+}
+
+check() {
+	cd "$builddir/build"
+	make check	
+}
+
+package() {
+	cd "$builddir/build"
+	mkdir -p "$pkgdir"
+	make DESTDIR="$pkgdir" install || return 1	
+	rm -rf "$pkgdir"/usr/share/doc
+	rm -rf "$pkgdir"/usr/share/man
+	rm -rf "$pkgdir"/usr/share/sdcc/lib/src
+}
+
+sha512sums="a9c3fee427cbc66b56a286c8d66b2922f79c9dfb42d2ed2843b2e192a6b314a04de4c82f1083d8625b49756b5f1d99f8fb706402b5f1284110760ec346303779  sdcc-src-4.1.0.tar.bz2"
