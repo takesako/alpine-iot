@@ -1,0 +1,79 @@
+--- 6.2/src/vmod_parseform.c
++++ 6.5/src/vmod_parseform.c
+@@ -59,7 +59,7 @@
+ 	unsigned   u;
+ 	char       *rpp, *rp;
+ 	const char *p;
+-	u = WS_Reserve(ctx->ws, 0);
++	u = WS_ReserveAll(ctx->ws);
+ 	rpp = rp = ctx->ws->f;
+ 	
+ 
+@@ -102,7 +102,7 @@
+ 	AN(p);
+ 	memset(p, 0, sizeof *p);
+ 	
+-	u = WS_Reserve(ctx->ws, 0);
++	u = WS_ReserveAll(ctx->ws);
+ 	rpp = rp = ctx->ws->f;
+ 	last = txt + strlen(txt);
+ 	ssize_t bodylen;
+@@ -183,10 +183,11 @@
+ 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
+ 	CHECK_OBJ_NOTNULL(ctx->req, REQ_MAGIC);
+ 
+-	l = VRB_Iterate(ctx->req, IterCopyReqBody, (void*)vsb);
++	// l = VRB_Iterate(ctx->req, IterCopyReqBody, (void*)vsb);
++	l = VRB_Iterate(ctx->req->wrk, ctx->vsl, ctx->req, IterCopyReqBody, vsb);
+ 	VSB_finish(vsb);
+ 	if (l < 0) {
+-		VSB_delete(vsb);
++		VSB_fini(vsb);
+ 		VSLb(ctx->vsl, SLT_VCL_Error,
+ 		    "Iteration on req.body didn't succeed.");
+ 		return;
+@@ -214,7 +215,7 @@
+ 	glen   = strlen(glue);
+ 	keylen = strlen(key);
+ 	
+-	u = WS_Reserve(ctx->ws, 0);
++	u = WS_ReserveAll(ctx->ws);
+ 	rpp = rp = ctx->ws->f;
+ 	
+ 	while(1){
+@@ -299,7 +300,7 @@
+ 	keylen = strlen(key);
+ 	glen   = strlen(glue);
+ 
+-	u   = WS_Reserve(ctx->ws, 0);
++	u   = WS_ReserveAll(ctx->ws);
+ 	rpp = rp = ctx->ws->f;
+ 
+ 	while(1){
+@@ -370,7 +371,7 @@
+ 	last   = porg + VSB_len(vsb);
+ 	keylen = strlen(key);
+ 	
+-	u      = WS_Reserve(ctx->ws, 0);
++	u      = WS_ReserveAll(ctx->ws);
+ 	rpp    = rp = ctx->ws->f;
+ 	
+ 	
+@@ -441,7 +442,7 @@
+ 
+ static void vmod_free(void *priv){
+ 	struct vmod_priv_parseform *tmp = priv;
+-	VSB_delete(tmp->vsb);
++	VSB_destroy(&tmp->vsb);
+ 	FREE_OBJ(tmp);
+ }
+ 
+@@ -459,7 +460,7 @@
+ vmod_get_blob(VRT_CTX, struct vmod_priv *priv, VCL_STRING key, VCL_STRING glue, VCL_BOOL decode)
+ {
+ 
+-	if (ctx->req->req_body_status != REQ_BODY_CACHED) {
++	if (ctx->req->req_body_status != BS_CACHED) {
+ 		VSLb(ctx->vsl, SLT_VCL_Error,
+ 		   "Unbuffered req.body");
+ 		struct vrt_blob *nr = NULL;

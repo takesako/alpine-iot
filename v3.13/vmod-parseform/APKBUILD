@@ -1,0 +1,41 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=vmod-parseform
+pkgver=62.6
+pkgrel=1
+pkgdesc="Varnish module for parse to POST request"
+url="https://github.com/xcir/libvmod-parseform"
+arch="all"
+license="BSD"
+depends=""
+makedepends="python3 py3-docutils libtool automake autoconf varnish varnish-libs varnish-dev"
+install=""
+subpackages=""
+source="lib$pkgname-$pkgver.tar.gz::https://github.com/xcir/libvmod-parseform/archive/v$pkgver.tar.gz
+	vmod_parseform.c.6.5.1.patch
+	"
+builddir="$srcdir/lib$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	sh autogen.sh
+	./configure \
+		--build="$CBUILD" \
+		--host="$CHOST" \
+		--disable-dependency-tracking
+	make
+}
+
+check() {
+	cd "$builddir"
+	make check
+}
+
+package() {
+	cd "$builddir"
+	mkdir -p "$pkgdir"/usr/lib/varnish/vmods
+	install -D -m 755 -t "$pkgdir"/usr/lib/varnish/vmods src/.libs/libvmod_parseform.so
+}
+
+sha512sums="3c5025411eab3ab482931476e5eac511362eb719fbe9956891cae09b78488cd81ae7a6a84a8f0d7b44fe45e9dd5d48fbfa9710221380495dca4657725d9805a7  libvmod-parseform-62.6.tar.gz
+b1e1364cf2655a5dc3a623d9e54d72a8713c1e053311b74ea938b0f19d1e99ab527caf999a1bdfa1ae887259064035d1ecbcf7fef125f6836e3cf005eaaaa8a9  vmod_parseform.c.6.5.1.patch"
