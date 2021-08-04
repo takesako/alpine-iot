@@ -3,12 +3,12 @@
 
 # when changing _ver we *must* bump _rel
 _name=virtualbox-guest-modules
-_ver=6.1.20
+_ver=6.1.26
 _rel=0
 
 _flavor=${FLAVOR:-lts}
 _kpkg=linux-$_flavor
-_kver=5.10.29
+_kver=5.10.38
 _krel=0
 
 _kpkgver="$_kver-r$_krel"
@@ -93,4 +93,4 @@ virt() {
 		"$subpkgdir"/lib/modules/
 }
 
-sha512sums="b5af4e04e1a52c85b20226a274fac93712b79d426c0268cce3f2a337616a03161a55522ecddd13844bfc24a6808ba3d651366e74ce657cc6f8fd64c34ae745a4  VirtualBox-6.1.20.tar.bz2"
+sha512sums="7668abaa6e5e9cfbc3c7ae1c6efc11663bce906aa002f78cf2c7acbf9b47f96faeb64c2762330c7091694c191ff2311f3674bd930cfdc020c23ef1d4fd893c9b  VirtualBox-6.1.26.tar.bz2"

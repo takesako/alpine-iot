@@ -1,7 +1,7 @@
 # Contributor: Ben Allen <bensallen@me.com>
 # Maintainer:
 pkgname=virtualbox-guest-additions
-pkgver=6.1.20
+pkgver=6.1.26
 pkgrel=0
 pkgdesc="VirtualBox Addtions userland components"
 arch='x86 x86_64'
@@ -61,7 +61,7 @@ x11() {
 	install -v -Dm755 "$srcdir"/virtualbox-drm-client.initd "$subpkgdir"/etc/init.d/virtualbox-drm-client
 }
 
-sha512sums="b5af4e04e1a52c85b20226a274fac93712b79d426c0268cce3f2a337616a03161a55522ecddd13844bfc24a6808ba3d651366e74ce657cc6f8fd64c34ae745a4  VirtualBox-6.1.20.tar.bz2
+sha512sums="7668abaa6e5e9cfbc3c7ae1c6efc11663bce906aa002f78cf2c7acbf9b47f96faeb64c2762330c7091694c191ff2311f3674bd930cfdc020c23ef1d4fd893c9b  VirtualBox-6.1.26.tar.bz2
 1da850bc30399ecde501eba5403ef1add1ae108d38394b01cd7f5cdf0462b855793d564d3adc1f770983b36529d77f3f7b0269fb65152468084a0a44c38e1638  futimens.patch
 b1c47cb910ac751df7bd4bc10c5501e91d88a9b3e4fe181b02755d433df8e89a160a38422912266f0cc51ba0c09854dad513ba6f2634fc76c59cee7989b259eb  musl-no-glibc.patch
 2c329085915f0ffa43828a14d8b29d0d876e48e18a0190ad146cd0731af7eca11cdf41d2e533c9cc73aa75506b9b91e3a08f2272cd8884e0d929722730b99862  musl-fix-stat-nsec.patch
