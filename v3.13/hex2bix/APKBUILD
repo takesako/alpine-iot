@@ -2,7 +2,7 @@
 # Maintainer: Yoshinori Takesako <takesako@namazu.org>
 pkgname=hex2bix
 pkgver=1.1
-pkgrel=0
+pkgrel=1
 pkgdesc="EZ-USB FX1-EZ-USB FX2LP(TM) Development Kit v1.1 for personal use"
 url="https://github.com/redchenjs/hex2bix"
 arch="all"
@@ -12,6 +12,7 @@ makedepends=""
 install=""
 subpackages=""
 source="hex2bix-master.tar.gz::https://github.com/redchenjs/hex2bix/archive/master.tar.gz
+	hex2bix-version.patch
 	hex2bix-checksum.patch"
 builddir="$srcdir/$pkgname-master"
 
@@ -31,4 +32,5 @@ package() {
 }
 
 sha512sums="9991403b63821198c207ed4397c7802efd66041503d69502923be5c637e9d242204859518a472ab16182d38d9b36055b2c84057f93a9584df30f8e73881d53e3  hex2bix-master.tar.gz
+31c9adf2ae1248cd64389e3ee7bd52546ced916cbe89531e3fe226db7806d41d61771f36da6fd1e5797fed304e6dbf89bfcc1b039f900c144655111fdbecbb98  hex2bix-version.patch
 d86eca7196c5c0ae07c0b7aae621840103d54e7d5beeb18ebc1825ab7d46d2dd8fd7c809388525104b47cd19bd5089a765af88d713886e22c2d920b7922911df  hex2bix-checksum.patch"

@@ -1,0 +1,21 @@
+--- hex2bin-master-old/hex2bix.c
++++ hex2bin-master/hex2bix.c
+@@ -217,6 +217,7 @@
+     fprintf(stdout,"   R      - Append bootload block to release reset\n");
+     fprintf(stdout,"   S      - Public symbol name for linking\n");
+     fprintf(stdout,"   V      - Vendor ID (Default = 0x0547) \n");
++    fprintf(stdout,"   v      - version ID (Default = 0x0000) \n");
+     exit(0);
+ }
+ 
+@@ -287,6 +288,10 @@
+                         IIC_Hdr.VendorID.w = (WORD)strtol(argv[++i],NULL,0);
+                         cont = FALSE;
+                         break;
++                    case 'v':                                                                                                                   IIC_Hdr.FnVersionID.w = (WORD)strtol(argv[++i],NULL,0);                                                                 cont = FALSE;                                                                                                           break; 
++                        IIC_Hdr.FnVersionID.w = (WORD)strtol(argv[++i],NULL,0);
++                        cont = FALSE;
++                        break;
+                     case 'P':
+                         IIC_Hdr.FnProductID.w = (WORD)strtol(argv[++i],NULL,0);
+                         cont = FALSE;
