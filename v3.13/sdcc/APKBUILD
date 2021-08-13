@@ -2,7 +2,7 @@
 # Maintainer: Yoshinori Takesako <takesako@namazu.org>
 pkgname=sdcc
 pkgver=4.1.0
-pkgrel=0
+pkgrel=1
 pkgdesc="Small Device C Compiler for mcs51"
 url="https://sourceforge.net/projects/sdcc/"
 arch="all"
@@ -29,11 +29,14 @@ build() {
 		--mandir=/usr/share/man \
 		--localstatedir=/var \
 		--enable-mcs51-port \
+		--disable-avr-port \
 		--disable-z80-port \
 		--disable-z180-port \
 		--disable-r2k-port \
+		--disable-r2ka-port \
 		--disable-r3ka-port \
 		--disable-gbz80-port \
+		--disable-z80n-port \
 		--disable-tlcs90-port \
 		--disable-ez80_z80-port \
 		--disable-ds390-port \
