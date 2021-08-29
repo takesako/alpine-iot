@@ -2,22 +2,24 @@
 
 _flavor=iot
 pkgname=linux-${_flavor}
-pkgver=5.10.38
+pkgver=5.10.57
 case $pkgver in
 	*.*.*)	_kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
 pkgrel=0
-pkgdesc="Linux iot kernel (virt with usbserial, cdc-acm, sound, kcore)"
+pkgdesc="Linux iot kernel (virt with usbserial, cdc-acm, sound, kcore, hw_random_virtio)"
 url="https://www.kernel.org"
 depends="mkinitfs"
 _depends_dev="perl gmp-dev elfutils-dev bash flex bison"
 makedepends="$_depends_dev sed installkernel bc linux-headers linux-firmware-any openssl-dev
-	diffutils"
+	diffutils findutils"
 options="!strip"
 _config=${config:-config-iot.${CARCH}}
 install=
 source="https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz
+	0007-pci-hotplug-declare-IDT-bridge-as-hotpluggabl-bridge.patch
+	0008-pci-spr2803-quirk-to-fix-class-ID.patch
 	config-iot.x86
 	"
 subpackages="$pkgname-dev:_dev:$CBUILD_ARCH"
@@ -208,5 +210,7 @@ _dev() {
 }
 
 sha512sums="95bc137d0cf9148da6a9d1f1a878698dc27b40f68e22c597544010a6c591ce1b256f083489d3ff45ff77753289b535135590194d88ef9f007d0ddab3d74de70e  linux-5.10.tar.xz
-20887c986a4ee8967844a587463b3b73ce38a8f6c2e05d61e7c651d1b0815a1eb997802e5d30a9400dceea4d824d6902680d5642fbf937345040942cfaea67f6  config-iot.x86
-3829c94628b30d2bf76c667f7be1331c07f4a0aec1949f5299d65935429eafda1d2fc317ff582baeb7a5e7b3af5a3d80823616d1b77819aec9e88850c32f01eb  patch-5.10.38.xz"
+ca5aafac37e0b5f3fcbaf801e12f98beb58ffaf1d8c88f76caff22b059831869b4094e7fdcb6d6860422d6b2d036e072caff460e1feb84bd04d10740ad56265b  0007-pci-hotplug-declare-IDT-bridge-as-hotpluggabl-bridge.patch
+cbe85cf34e8420c91d2276c2d2aa0ab5023af68e57a1fa613f073f16a76766c67f585eda71c28f232bd0625e0dc8275a9eddc95f49409205dc0dbcc28c9fac1c  0008-pci-spr2803-quirk-to-fix-class-ID.patch
+1f9677c3778bd9845db2d94b54d05889949f9532d1a8714a82a3ed55a76dce1827e7e5deb625338ab1467d0af28eb38c2e4c637504d2045303c8842a6016dfee  config-iot.x86
+004b2f3952092ba6b1a9c771d8aa447aa7704fb1f66c716b969113580bfa8c6f809933944107435d1e88b309539ae71f71fdca302fad17d12a2369c16f336ac7  patch-5.10.57.xz"
