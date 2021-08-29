@@ -11,12 +11,11 @@ depends="libusb-compat"
 makedepends="libusb-compat-dev ruby bash autoconf"
 install=""
 subpackages=""
-_commit="f5f05aa21880a19c8c2752a68c3079bb6c48adb5"
-source="$pkgname-$_commit.tar.gz::https://github.com/micronucleus/micronucleus/archive/$_commit.tar.gz
+source="$pkgname-$pkgver.tar.gz::https://github.com/micronucleus/micronucleus/archive/refs/tags/v$pkgver.tar.gz
 	Makefile.in
 	configure.in
 	"
-builddir="$srcdir/$pkgname-$_commit"
+builddir="$srcdir/$pkgname-$pkgver"
 options="!check"
 
 prepare() {
@@ -38,6 +37,6 @@ package() {
 	install -D -m 755 commandline/micronucleus "$pkgdir"/usr/bin/micronucleus
 }
 
-sha512sums="48fda895b18b4c3d854eadde5272e99387317e156597a2f4d21fa84da606219b5091bb14c792f988f25fcfc98ff01a5dedc9069feafb4b65cf057d71c54b7898  micronucleus-f5f05aa21880a19c8c2752a68c3079bb6c48adb5.tar.gz
+sha512sums="d4301eecfa4fd296b852e08d78d84a50ef6fa403e07729522d87c4537754690db10df42990076086a56ca4bba9591b94dc642bda0f45bb5533572575605b3cf9  micronucleus-2.5.tar.gz
 1ca39aa0c7909d47d2c0ddff8c0c2a822b9af70b53d110001c5d54cfd9b1efb6c1eb1e13a990ea3bb48040a3ae1ade5230e3f3c6e6e27e6c3205df0eca8110b9  Makefile.in
 03725614156e026719a5cde0e31b84fc1618b31f64a2601512da818db77dfaa2e42ce12037a3cb4f9b6eb04bf5f475b5590fdb0546814e0aa6f67c121e9da3fe  configure.in"
