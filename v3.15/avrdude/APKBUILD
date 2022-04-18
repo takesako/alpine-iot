@@ -1,0 +1,49 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=avrdude
+verbase=6.3
+reporev=1435
+pkgver=6.3_svn20200425
+pkgrel=0
+pkgdesc="AVRDUDE - AVR Downloader/UploaDEr"
+url="http://www.nongnu.org/avrdude/"
+arch="all"
+license="GPL2+"
+depends="libftdi1 libusb-compat"
+makedepends="libtool automake autoconf m4 flex bison linux-headers libftdi1-dev libusb-compat-dev"
+install=""
+subpackages="$pkgname-dev $pkgname-doc"
+svnurl="http://svn.savannah.nongnu.org/svn/avrdude/trunk/avrdude/"
+disturl="1ot.jp:packages/dist/"
+source="http://1ot.jp/alpine-iot/dist/$pkgname-$pkgver.tar.gz
+	avrdude-6.3-svn1435.patch
+	"
+builddir="$srcdir/$pkgname-$pkgver"
+
+# sudo apk add subversion
+# env RSYNC_RSH="ssh -p 3333" abuild snapshot
+# abuild checksum && abuild -r
+
+build() {
+	cd "$builddir"
+	libtoolize
+	aclocal
+	autoheader
+	automake -a -c
+	autoconf
+	./configure \
+		--mandir=/usr/share/man \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--enable-linuxgpio \
+		|| return 1
+	make || return 1
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install || return 1
+}
+
+sha512sums="07822c78dc7b1cfbf0c07d95d8e5f566f88c8add9a608abde0902440c5bcc80f6f4c3e6b7106e609019594bcf01f67c03f8d1a54d38127cb546dffdc8ca2b699  avrdude-6.3_svn20200425.tar.gz
+942f59bf7eda22349d45b278a1a81eb9b9316d59f30a65fa25b19cb277265e89a18a849eb8d1642aac513fed6d49110acf2b3a83fc46e4e8fb3977a431ad0eaa  avrdude-6.3-svn1435.patch"
