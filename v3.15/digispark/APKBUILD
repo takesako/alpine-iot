@@ -1,0 +1,126 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=digispark
+pkgver=1.6.7
+pkgrel=1
+pkgdesc="Digispark libraries for Digistump Arduino tiny"
+url="http://digistump.com/wiki/digispark"
+arch="all"
+license="LGPL-2.1 GPL-2.0 GPL-3.0 or custom:V-USB"
+depends=""
+makedepends="binutils-avr gcc-avr avr-libc"
+install=""
+subpackages=""
+source="https://github.com/digistump/DigistumpArduino/releases/download/$pkgver/digistump-avr-$pkgver.zip
+	Makefile
+	DigiMouse.patch
+	"
+
+builddir="$srcdir/$pkgver"
+options="!check"
+
+build() {
+	cd "$builddir"
+
+	CFLAGS_OPT="-g -Os -w -fno-exceptions -ffunction-sections -fdata-sections"
+	CFLAGS_TINY="-mmcu=attiny85 -DF_CPU=16500000L -DARDUINO=10805 -DARDUINO_AVR_DIGISPARK -DARDUINO_ARCH_AVR"
+	CFLAGS_PRO="-mmcu=attiny167 -DF_CPU=16000000L -DARDUINO=10805 -DARDUINO_AVR_DIGISPARKPRO -DARDUINO_ARCH_AVR"
+
+	cd cores/tiny
+	sed -i -e "2iextern \"C\" { void setup(); void loop(); int main(); }" main.cpp
+	cp -f ../../variants/digispark/pins_arduino.h .
+	make -f ../../../../Makefile \
+		CFLAGS="$CFLAGS_OPT $CFLAGS_TINY" \
+		INCLUDES="-I." \
+		SRCS="`echo *.cpp *.c`" \
+		TARGET="libtiny.a"
+	cd ../..
+
+	cd cores/pro
+	cp -f ../../variants/pro/pins_arduino.h .
+	make -f ../../../../Makefile \
+		CFLAGS="$CFLAGS_OPT $CFLAGS_PRO" \
+		INCLUDES="-I." \
+		SRCS="`echo *.cpp *.c`" \
+		TARGET="libpro.a"
+	cd ../..
+
+	cd libraries/DigisparkKeyboard
+	make -f ../../../../Makefile \
+		CFLAGS="$CFLAGS_OPT $CFLAGS_TINY" \
+		INCLUDES="-I../../cores/tiny" \
+		SRCS="usbdrvasm.S osccal.c usbdrv.c" \
+		TARGET="libDigiKeyboard.a"
+	cd ../..
+
+	cd libraries/DigisparkMouse
+	make -f ../../../../Makefile \
+		CFLAGS="$CFLAGS_OPT $CFLAGS_TINY" \
+		INCLUDES="-I../../cores/tiny" \
+		SRCS="usbdrvasm.S osccal.c usbdrv.c" \
+		TARGET="libDigiMouse.a"
+	cd ../..
+
+	cd libraries/DigisparkUSB
+	make -f ../../../../Makefile \
+		CFLAGS="$CFLAGS_OPT $CFLAGS_TINY" \
+		INCLUDES="-I../../cores/tiny" \
+		SRCS="DigiUSB.cpp usbdrvasm.S osccal.c usbdrv.c" \
+		TARGET="libDigiUSB.a"
+	cd ../..
+}
+
+package() {
+	cd "$builddir"
+	mkdir -p "$pkgdir"/usr/lib/$pkgname/
+	mkdir -p "$pkgdir"/usr/lib/$pkgname/pro
+
+	examples="$pkgdir"/usr/share/$pkgname/examples
+	install -D -m 644 ../../Makefile $examples/Makefile
+	install -D -m 644 libraries/Digispark_Examples/Start/Start.ino $examples/Start.cpp
+	install -D -m 644 libraries/DigisparkKeyboard/examples/Keyboard/Keyboard.ino $examples/DigiKeyboard.cpp
+	install -D -m 644 libraries/DigisparkMouse/examples/Mouse/Mouse.ino $examples/DigiMouse.cpp
+	install -D -m 644 libraries/DigisparkUSB/examples/Echo/Echo.ino $examples/DigiUSB.cpp
+	install -D -m 644 -t $examples libraries/DigisparkUSB/*License.txt
+	install -D -m 644 -t $examples libraries/DigisparkUSB/USB-IDs-for-free.txt
+
+	sed -i -e "1i#include <Arduino.h>" $examples/Start.cpp
+        sed -i -e "2iextern \"C\" { void setup(); void loop(); }" $examples/DigiUSB.cpp
+        sed -i -e "1i// usage: github.com/digistump/DigisparkExamplePrograms" $examples/DigiUSB.cpp
+
+	cd cores/tiny
+	mkdir -p "$pkgdir"/usr/include/$pkgname
+	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname *.h
+	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname libtiny.a
+	cd ../..
+
+	cd cores/pro
+	mkdir -p "$pkgdir"/usr/include/$pkgname/pro
+	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/pro *.h
+	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname/pro libpro.a
+	cd ../..
+
+	cd libraries/DigisparkKeyboard
+	mkdir -p "$pkgdir"/usr/include/$pkgname/DigiKeyboard
+	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/DigiKeyboard *.h
+	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname libDigiKeyboard.a
+	cd ../..
+
+	cd libraries/DigisparkMouse
+	mkdir -p "$pkgdir"/usr/include/$pkgname/DigiMouse
+	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/DigiMouse *.h
+	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname libDigiMouse.a
+	cd ../..
+
+	cd libraries/DigisparkUSB
+	mkdir -p "$pkgdir"/usr/include/$pkgname/DigiUSB
+	install -D -m 644 -t "$pkgdir"/usr/include/$pkgname/DigiUSB *.h
+	install -D -m 644 -t "$pkgdir"/usr/lib/$pkgname libDigiUSB.a
+	cd ../..
+
+	#return 1
+}
+
+sha512sums="95b3780a155c8e9272313b59b629c43ca80131e7cd2d6d3b2fd8ec03cfb45d1ca11ea9332c05c568cc46244e1d0fa524b388272baf4f0cd839aa4fe362321e5d  digistump-avr-1.6.7.zip
+f5e2fc06c67bec6ff7b0655868272b85513a2a86324be8109992a2bc940869fac50465838faf46c8ff8f409f45ef70894719345acd7dd8165e9fee3cd3f75d9b  Makefile
+12491d2b8ea080c8ac96f454488e9b928489b1643c6d0314d7992ba0d832239ccaf200471cfeae4c42a5ee4b1ecd3c35d4dfffbf269ef6870bd3b6d39c5bf1a3  DigiMouse.patch"

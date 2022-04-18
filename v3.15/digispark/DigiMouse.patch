@@ -1,0 +1,16 @@
+--- 1.6.7-old/libraries/DigisparkMouse/DigiMouse.h
++++ 1.6.7-new/libraries/DigisparkMouse/DigiMouse.h
+@@ -256,11 +256,11 @@
+ 	}
+ 
+ 	void leftClick(){
+-		last_built_report[0] = MOUSEBTN_RIGHT_MASK;
++		last_built_report[0] = MOUSEBTN_LEFT_MASK;
+ 	}
+ 	
+ 	void middleClick(){
+-		last_built_report[0] = MOUSEBTN_RIGHT_MASK;
++		last_built_report[0] = MOUSEBTN_MIDDLE_MASK;
+ 	}
+ 	
+ 	void setButtons(unsigned char buttons) {
