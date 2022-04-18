@@ -1,0 +1,26 @@
+--- hex2bix-master-old/hex2bix.c
++++ hex2bix-master/hex2bix.c
+@@ -406,16 +406,23 @@
+                 chksum = 0;
+ 
+                 if (rec_addr + rec_length > MemSize)
+                 {
+                     fprintf(stderr, "Error:  Input image too big for output file size.  Addr = 0x%lx, len = 0x%x.\n", rec_addr, rec_length);
+                     exit(2);
+                 }
+ 
++                for(i=0; i<4; ++i)
++                {
++                    memcpy(tmp,&line[(i*2)+1],2);
++                    tmp[2] = 0;
++                    chksum += ((BYTE)strtol(tmp,NULL,16));				
++                }
++
+                 for(i=0;(i < rec_length) && (i < MemSize - rec_addr); ++i)
+                 {
+                     memcpy(tmp,&line[(i*2)+9],2);
+                     tmp[2] = 0;
+                     chksum += (Image[rec_addr+i] = (BYTE)strtol(tmp,NULL,16));
+                     ImageMap[rec_addr+i] = TRUE;
+                 }
+ 
