@@ -1,9 +1,7 @@
 # Contributor: Yoshinori Takesako <takesako@namazu.org>
 # Maintainer: Yoshinori Takesako <takesako@namazu.org>
 pkgname=avrdude
-verbase=6.3
-reporev=1435
-pkgver=6.3_svn20200425
+pkgver=6.4
 pkgrel=0
 pkgdesc="AVRDUDE - AVR Downloader/UploaDEr"
 url="http://www.nongnu.org/avrdude/"
@@ -13,16 +11,10 @@ depends="libftdi1 libusb-compat"
 makedepends="libtool automake autoconf m4 flex bison linux-headers libftdi1-dev libusb-compat-dev"
 install=""
 subpackages="$pkgname-dev $pkgname-doc"
-svnurl="http://svn.savannah.nongnu.org/svn/avrdude/trunk/avrdude/"
-disturl="1ot.jp:packages/dist/"
-source="http://1ot.jp/alpine-iot/dist/$pkgname-$pkgver.tar.gz
-	avrdude-6.3-svn1435.patch
+source="http://download.savannah.gnu.org/releases/avrdude/$pkgname-$pkgver.tar.gz
+	avrdude-6.4-ftdi.patch
 	"
 builddir="$srcdir/$pkgname-$pkgver"
-
-# sudo apk add subversion
-# env RSYNC_RSH="ssh -p 3333" abuild snapshot
-# abuild checksum && abuild -r
 
 build() {
 	cd "$builddir"
@@ -45,5 +37,7 @@ package() {
 	make DESTDIR="$pkgdir" install || return 1
 }
 
-sha512sums="07822c78dc7b1cfbf0c07d95d8e5f566f88c8add9a608abde0902440c5bcc80f6f4c3e6b7106e609019594bcf01f67c03f8d1a54d38127cb546dffdc8ca2b699  avrdude-6.3_svn20200425.tar.gz
-942f59bf7eda22349d45b278a1a81eb9b9316d59f30a65fa25b19cb277265e89a18a849eb8d1642aac513fed6d49110acf2b3a83fc46e4e8fb3977a431ad0eaa  avrdude-6.3-svn1435.patch"
+sha512sums="
+ce6127c212a83c5079d3bd80a7a0127220f9652201595a24b991916556eb8fc69d2910f7e112d7025a5aeec8d341e72293467ac1dc1a62be1f391dd9408f9a06  avrdude-6.4.tar.gz
+f0028a35749684c949862e34aeb2514fc99e9015d41b3270236615e8c114128d21c2549db4177b2b474be654c1c19b93fd5ad0341df562ea4e9793468afe949e  avrdude-6.4-ftdi.patch
+"
