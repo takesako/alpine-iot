@@ -1,7 +1,7 @@
 # Contributor: Yoshinori Takesako <takesako@namazu.org>
 # Maintainer: Yoshinori Takesako <takesako@namazu.org>
 pkgname=sdcc
-pkgver=4.2.0
+pkgver=4.1.0
 pkgrel=1
 pkgdesc="Small Device C Compiler for mcs51"
 url="https://sourceforge.net/projects/sdcc/"
