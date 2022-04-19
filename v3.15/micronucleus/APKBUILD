@@ -8,7 +8,7 @@ url="https://github.com/micronucleus/micronucleus/"
 arch="all"
 license="GPL2+"
 depends="libusb-compat"
-makedepends="libusb-compat-dev ruby bash autoconf"
+makedepends="libusb-compat-dev ruby bash autoconf libtool"
 install=""
 subpackages=""
 source="$pkgname-$pkgver.tar.gz::https://github.com/micronucleus/micronucleus/archive/refs/tags/v$pkgver.tar.gz
@@ -25,8 +25,8 @@ prepare() {
 build() {
 	cd "$builddir/commandline"
 	autoconf
-	wget -O config.guess 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD'
-	wget -O config.sub 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD'
+	cp -p /usr/share/libtool/build-aux/config.guess .
+	cp -p /usr/share/libtool/build-aux/config.sub .
 	./configure --build=$CBUILD --host=$CHOST || return 1
 	make || return 1
 }
