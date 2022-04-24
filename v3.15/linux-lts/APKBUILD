@@ -19,6 +19,7 @@ _config=${config:-config-lts.${CARCH}}
 install=
 source="https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz
 	vmlinux-zstd.patch
+	add_config_file
 	lts.x86_64.config
 	virt.x86_64.config
 	"
@@ -101,6 +102,7 @@ _prepareconfig() {
 		|| return 1
 
 	cp "$srcdir"/$_config "$_builddir"/.config
+	sh -xe "$srcdir"/add_config_file "$_builddir"/.config
 	msg "Configuring $_flavor kernel ($_arch)"
 	make -C "$srcdir"/linux-$_kernver \
 		O="$_builddir" \
@@ -280,7 +282,8 @@ _dev() {
 sha512sums="
 d25ad40b5bcd6a4c6042fd0fd84e196e7a58024734c3e9a484fd0d5d54a0c1d87db8a3c784eff55e43b6f021709dc685eb0efa18d2aec327e4f88a79f405705a  linux-5.15.tar.xz
 d26d3f99fdcbd0f56e9af32a281870bbfd9fe6a12d17921ef3876e72bd1e92a3c131e06567078a45c11a41826b39d3068cc6f0e89f67d9e16a14825984869268  vmlinux-zstd.patch
+c1e6572bfe13e961d1a8550bfc0a88f533ec8daa9e5d8a84df8c6af8aa2911988b08d775653e5a92dfcfd88860887436844a74efb380aace6e1e2d596a764219  add_config_file
 a67c64326d460bb0a659d2bb16642dc7582ca9c8e1a0b7f0f5f510bbe4797dda9c78026242b4bc91de8832889f5676b6cb43ca49bba05b20fd88f0afed4d7495  lts.x86_64.config
-c700b514f47bc649430306ff3e1e845c895bf4eb8e74eb89f858e7e103fa82fbbd085082b3094b83a52fd8f40cd53d7041cb4a5e49c088443dcf635633089448  virt.x86_64.config
+428cf157c3aece952d781421f3384671c80e36dea8cb2591177203450f7638608b4125da178688fdc77361e2dd8926d78d136ba76fcca85c6bc865aef7c51486  virt.x86_64.config
 9490dfae788cfa0b5b9d146caf62a3b04017bd182b26a113ab1442176fe832b6e1812222f982c0e22c200df934d94733efa76a694435eca437bfdffafe024486  patch-5.15.32.xz
 "
