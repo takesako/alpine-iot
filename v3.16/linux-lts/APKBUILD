@@ -1,0 +1,291 @@
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+
+_flavor=lts
+pkgname=linux-${_flavor}
+pkgver=5.15.49
+case $pkgver in
+	*.*.*)	_kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=101
+pkgdesc="Linux lts kernel"
+url="https://www.kernel.org"
+depends="mkinitfs"
+_depends_dev="perl gmp-dev mpc1-dev mpfr-dev elfutils-dev bash flex bison zstd"
+makedepends="$_depends_dev sed installkernel bc linux-headers linux-firmware-any openssl1.1-compat-dev mawk
+	diffutils findutils zstd"
+options="!strip"
+_config=${config:-config-lts.${CARCH}}
+install=
+source="https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz
+	0001-powerpc-config-defang-gcc-check-for-stack-protector-.patch
+	vmlinux-zstd.patch
+	add_config_file
+	lts.x86_64.config
+	virt.x86_64.config
+	"
+subpackages="$pkgname-dev:_dev:$CBUILD_ARCH"
+_flavors=
+for _i in $source; do
+	case $_i in
+	*.$CARCH.config)
+		_f=${_i%.$CARCH.config}
+		_flavors="$_flavors ${_f}"
+		if [ "linux-$_f" != "$pkgname" ]; then
+			subpackages="$subpackages linux-${_f}::$CBUILD_ARCH linux-${_f}-dev:_dev:$CBUILD_ARCH"
+		fi
+		;;
+	esac
+done
+
+if [ "${pkgver%.0}" = "$pkgver" ]; then
+	source="$source
+	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/patch-$pkgver.xz"
+fi
+arch="all !armhf !riscv64"
+license="GPL-2.0"
+
+# secfixes:
+#   5.10.4-r0:
+#     - CVE-2020-29568
+#     - CVE-2020-29569
+
+prepare() {
+	local _patch_failed=
+	cd "$srcdir"/linux-$_kernver
+	if [ "$_kernver" != "$pkgver" ]; then
+		msg "Applying patch-$pkgver.xz"
+		unxz -c < "$srcdir"/patch-$pkgver.xz | patch -p1 -N
+	fi
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	# remove localversion from patch if any
+	rm -f localversion*
+}
+
+_kernelarch() {
+	local arch="$1"
+	case "$arch" in
+		aarch64*) arch="arm64" ;;
+		arm*) arch="arm" ;;
+		mips*) arch="mips" ;;
+		ppc*) arch="powerpc" ;;
+		s390*) arch="s390" ;;
+	esac
+	echo "$arch"
+}
+
+_prepareconfig() {
+	local _flavor="$1"
+	local _arch="$2"
+	local _config=$_flavor.$_arch.config
+	local _builddir="$srcdir"/build-$_flavor.$_arch
+	mkdir -p "$_builddir"
+	echo "-$pkgrel-$_flavor" > "$_builddir"/localversion-alpine \
+		|| return 1
+
+	cp "$srcdir"/$_config "$_builddir"/.config
+	sh -xe "$srcdir"/add_config_file "$_builddir"/.config
+	msg "Configuring $_flavor kernel ($_arch)"
+	make -C "$srcdir"/linux-$_kernver \
+		O="$_builddir" \
+		ARCH="$(_kernelarch $_arch)" \
+		olddefconfig
+}
+
+listconfigs() {
+	for i in $source; do
+		case "$i" in
+			*.config) echo $i;;
+		esac
+	done
+}
+
+prepareconfigs() {
+	for _config in $(listconfigs); do
+		local _flavor=${_config%%.*}
+		local _arch=${_config%.config}
+		_arch=${_arch#*.}
+		local _builddir="$srcdir"/build-$_flavor.$_arch
+		_prepareconfig "$_flavor" "$_arch"
+	done
+}
+
+# this is supposed to be run before version is bumped so we can compare
+# what new kernel config knobs are introduced
+prepareupdate() {
+	clean && fetch && unpack && prepare && deps
+	prepareconfigs
+	rm -r "$srcdir"/linux-$_kernver
+}
+
+updateconfigs() {
+	if ! [ -d "$srcdir"/linux-$_kernver ]; then
+		deps && fetch && unpack && prepare
+	fi
+	for _config in $(listconfigs); do
+		local _flavor=${_config%%.*}
+		local _arch=${_config%.config}
+		_arch=${_arch#*.}
+		local _builddir="$srcdir"/build-$_flavor.$_arch
+		mkdir -p "$_builddir"
+		echo "-$pkgrel-$_flavor" > "$_builddir"/localversion-alpine
+		local actions="listnewconfig oldconfig"
+		if ! [ -f "$_builddir"/.config ]; then
+			cp "$srcdir"/$_config "$_builddir"/.config
+			actions="olddefconfig"
+			env | grep ^CONFIG_ >> "$_builddir"/.config || true
+		fi
+		make -j1 -C "$srcdir"/linux-$_kernver \
+			O="$_builddir" \
+			ARCH="$(_kernelarch $_arch)" \
+			$actions savedefconfig
+
+		cp "$_builddir"/defconfig "$startdir"/$_config
+	done
+}
+
+build() {
+	unset LDFLAGS
+	export KBUILD_BUILD_TIMESTAMP="$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EPOCH})"
+	for i in $_flavors; do
+		_prepareconfig "$i" "$CARCH"
+	done
+	for i in $_flavors; do
+		msg "Building $i kernel"
+		cd "$srcdir"/build-$i.$CARCH
+		make ARCH="$(_kernelarch $CARCH)" \
+			CC="${CC:-gcc}" \
+			AWK="${AWK:-mawk}" \
+			KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine"
+	done
+}
+
+_package() {
+	local _buildflavor="$1" _outdir="$2"
+	local _abi_release=${pkgver}-${pkgrel}-${_buildflavor}
+	export KBUILD_BUILD_TIMESTAMP="$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EPOCH})"
+
+	cd "$srcdir"/build-$_buildflavor.$CARCH
+	# modules_install seems to regenerate a defect Modules.symvers on s390x. Work
+	# around it by backing it up and restore it after modules_install
+	cp Module.symvers Module.symvers.backup
+
+	mkdir -p "$_outdir"/boot "$_outdir"/lib/modules
+
+	local _install
+	case "$CARCH" in
+		arm*|aarch64) _install="zinstall dtbs_install";;
+		*) _install=install;;
+	esac
+
+	make -j1 modules_install $_install \
+		ARCH="$(_kernelarch $CARCH)" \
+		INSTALL_MOD_PATH="$_outdir" \
+		INSTALL_PATH="$_outdir"/boot \
+		INSTALL_DTBS_PATH="$_outdir/boot/dtbs-$_buildflavor"
+
+	cp Module.symvers.backup Module.symvers
+
+	rm -f "$_outdir"/lib/modules/${_abi_release}/build \
+		"$_outdir"/lib/modules/${_abi_release}/source
+	rm -rf "$_outdir"/lib/firmware
+
+	install -D -m644 include/config/kernel.release \
+		"$_outdir"/usr/share/kernel/$_buildflavor/kernel.release
+}
+
+# main flavor installs in $pkgdir
+package() {
+	### depends="$depends linux-firmware-any"
+
+	_package lts "$pkgdir"
+}
+
+# subflavors install in $subpkgdir
+virt() {
+	_package virt "$subpkgdir"
+}
+
+_dev() {
+	local _flavor=$(echo $subpkgname | sed -E 's/(^linux-|-dev$)//g')
+	local _abi_release=${pkgver}-${pkgrel}-$_flavor
+	# copy the only the parts that we really need for build 3rd party
+	# kernel modules and install those as /usr/src/linux-headers,
+	# simlar to what ubuntu does
+	#
+	# this way you dont need to install the 300-400 kernel sources to
+	# build a tiny kernel module
+	#
+	pkgdesc="Headers and script for third party modules for $_flavor kernel"
+	depends="$_depends_dev"
+	local dir="$subpkgdir"/usr/src/linux-headers-${_abi_release}
+	export KBUILD_BUILD_TIMESTAMP="$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EPOCH})"
+
+	# first we import config, run prepare to set up for building
+	# external modules, and create the scripts
+	mkdir -p "$dir"
+	local _builddir="$srcdir"/build-$_flavor.$CARCH
+	cp -a "$_builddir"/.config "$_builddir"/localversion-alpine \
+		"$dir"/
+
+	make -j1 -C "$srcdir"/linux-$_kernver \
+		O="$dir" \
+		ARCH="$(_kernelarch $CARCH)" \
+		prepare modules_prepare scripts
+
+	# remove the stuff that points to real sources. we want 3rd party
+	# modules to believe this is the soruces
+	rm "$dir"/Makefile "$dir"/source
+
+	# copy the needed stuff from real sources
+	#
+	# this is taken from ubuntu kernel build script
+	# http://kernel.ubuntu.com/git/ubuntu/ubuntu-zesty.git/tree/debian/rules.d/3-binary-indep.mk
+	cd "$srcdir"/linux-$_kernver
+	find .  -path './include/*' -prune \
+		-o -path './scripts/*' -prune -o -type f \
+		\( -name 'Makefile*' -o -name 'Kconfig*' -o -name 'Kbuild*' -o \
+		   -name '*.sh' -o -name '*.pl' -o -name '*.lds' -o -name 'Platform' \) \
+		-print | cpio -pdm "$dir"
+
+	cp -a scripts include "$dir"
+
+	find $(find arch -name include -type d -print) -type f \
+		| cpio -pdm "$dir"
+
+	install -Dm644 "$srcdir"/build-$_flavor.$CARCH/Module.symvers \
+		"$dir"/Module.symvers
+
+	mkdir -p "$subpkgdir"/lib/modules/${_abi_release}
+	ln -sf /usr/src/linux-headers-${_abi_release} \
+		"$subpkgdir"/lib/modules/${_abi_release}/build
+}
+
+sha512sums="
+d25ad40b5bcd6a4c6042fd0fd84e196e7a58024734c3e9a484fd0d5d54a0c1d87db8a3c784eff55e43b6f021709dc685eb0efa18d2aec327e4f88a79f405705a  linux-5.15.tar.xz
+214c54a839ae37849715520f4b1049f0df5366ca32522701b43afecfad116794c4542940ba32d389f28f2549d08c03d148f884cb8e565b75aa3c0cad6a4887b7  0001-powerpc-config-defang-gcc-check-for-stack-protector-.patch
+d26d3f99fdcbd0f56e9af32a281870bbfd9fe6a12d17921ef3876e72bd1e92a3c131e06567078a45c11a41826b39d3068cc6f0e89f67d9e16a14825984869268  vmlinux-zstd.patch
+c1e6572bfe13e961d1a8550bfc0a88f533ec8daa9e5d8a84df8c6af8aa2911988b08d775653e5a92dfcfd88860887436844a74efb380aace6e1e2d596a764219  add_config_file
+f2cb6bed41d8462f3dc809cefa7b5b22a82490ec952cf3130259d2d52a2e3442286e944ffedc63d2aebf952a391944a3246be6522733cbc91e99a4f8871e1d1b  lts.x86_64.config
+fd5dea1a2ada211e1cf673553a0e2df3af7ffc4ae35b316b0d009145bcddf984cfd98c2b1e91de08c10a3442e32ff470d1285ef5d291068fb319160bb9552cf1  virt.x86_64.config
+b3b84cb2caebe513158832319dab583a8ad17e8023799590a7f630018c245f41e3e912fbe8de0d9bf2a88c3f39ce5d7ab73539c5b39761e924f1e08ef7b84685  patch-5.15.48.xz
+"
