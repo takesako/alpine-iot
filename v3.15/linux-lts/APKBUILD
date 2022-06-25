@@ -2,7 +2,7 @@
 
 _flavor=lts
 pkgname=linux-${_flavor}
-pkgver=5.15.32
+pkgver=5.15.48
 case $pkgver in
 	*.*.*)	_kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
@@ -18,6 +18,7 @@ options="!strip"
 _config=${config:-config-lts.${CARCH}}
 install=
 source="https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz
+	0001-powerpc-config-defang-gcc-check-for-stack-protector-.patch
 	vmlinux-zstd.patch
 	add_config_file
 	lts.x86_64.config
