@@ -1,0 +1,44 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=avrdude
+pkgver=7.0
+pkgrel=101
+pkgdesc="AVRDUDE - AVR Downloader/UploaDEr"
+url="http://www.nongnu.org/avrdude/"
+arch="all"
+license="GPL2+"
+depends="libftdi1 libusb-compat"
+makedepends="libtool automake autoconf m4 flex bison linux-headers libftdi1-dev libusb-compat-dev"
+install=""
+subpackages="$pkgname-dev $pkgname-doc"
+source="http://download.savannah.gnu.org/releases/avrdude/$pkgname-$pkgver.tar.gz
+	avrdude-7.0-ftdi.patch
+	"
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	libtoolize
+	aclocal
+	autoheader
+	automake -a -c
+	autoconf
+	./configure \
+		--build=$CBUILD \
+		--mandir=/usr/share/man \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--enable-linuxgpio \
+		|| return 1
+	make || return 1
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install || return 1
+}
+
+sha512sums="
+891c435d8f6d4529762d647c468c52b4c04c3a663b703af0ddd2c284aecfce92ce99502aed77f409f1afb4ab7d4e05d85f26d03de3624c7c14fcbc852d988d53  avrdude-7.0.tar.gz
+9a15d7b3ada6cb32a1fcdb8c16ed1bc5d8630927016cf51b05400ff8ced7e13933428e438caaea5d97b1a6c18457aee4224792ce7b508462551e97568b045fc7  avrdude-7.0-ftdi.patch
+"
