@@ -2,7 +2,7 @@
 
 _flavor=lts
 pkgname=linux-${_flavor}
-pkgver=5.15.61
+pkgver=5.15.65
 case $pkgver in
 	*.*.*)	_kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
