@@ -1,4 +1,6 @@
 #!/bin/sh
+#   cp "$srcdir"/$_config "$_builddir"/.config
+# + sh -xe "$srcdir"/add_config_file "$_builddir"/.config
 test ! -f $1 && echo "Usage: $0 .config" && exit 1
 
 grep -q "CONFIG_PROC_KCORE=" $1 || echo "CONFIG_PROC_KCORE=y" >>$1

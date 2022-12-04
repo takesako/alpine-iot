@@ -1,0 +1,29 @@
+--- APKBUILD.orig	2022-12-04 16:16:40.985216408 +0900
++++ APKBUILD	2022-12-04 16:26:21.143665306 +0900
+@@ -8,5 +8,5 @@
+ 	*.*) _kernver=$pkgver;;
+ esac
+-pkgrel=0
++pkgrel=101
+ pkgdesc="Linux lts kernel"
+ url="https://www.kernel.org"
+@@ -35,4 +35,6 @@
+ 	virt.x86.config
+ 	virt.x86_64.config
++
++	add_config_file
+ 	"
+ subpackages="$pkgname-dev:_dev:$CBUILD_ARCH"
+@@ -121,4 +123,5 @@
+ 
+ 	cp "$srcdir"/$_config "$_builddir"/.config
++	sh -xe "$srcdir"/add_config_file "$_builddir"/.config
+ 	msg "Configuring $_flavor kernel ($_arch)"
+ 	make -C "$srcdir"/linux-$_kernver \
+@@ -232,5 +235,5 @@
+ # main flavor installs in $pkgdir
+ package() {
+-	depends="$depends linux-firmware-any"
++	### depends="$depends linux-firmware-any"
+ 
+ 	_package lts "$pkgdir"
