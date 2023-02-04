@@ -1,7 +1,7 @@
 # alpine-iot
 Alpine Linux packages for IoT tools
 - apk binary packages
-  - http://1ot.jp/alpine-iot/
+  - http://10t.dev/alpine-iot/
 - APKBUILD sources
   - http://github.com/takesako/alpine-iot/
 
@@ -54,8 +54,8 @@ cd v3.5
 ## How to apk add (for Alpine Linux users)
 ### setup
 ```
-echo "http://1ot.jp/alpine-iot/v3.5" >> /etc/apk/repositories
-wget -P /etc/apk/keys http://1ot.jp/alpine-iot/keys/takesako@namazu.org-587ad2bb.rsa.pub
+echo "http://10t.dev/alpine-iot/v3.5" >> /etc/apk/repositories
+wget -P /etc/apk/keys http://10t.dev/alpine-iot/keys/takesako@namazu.org-587ad2bb.rsa.pub
 apk update
 ```
 ### install
