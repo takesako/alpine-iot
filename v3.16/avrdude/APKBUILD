@@ -1,44 +1,36 @@
 # Contributor: Yoshinori Takesako <takesako@namazu.org>
 # Maintainer: Yoshinori Takesako <takesako@namazu.org>
 pkgname=avrdude
-pkgver=7.0
+pkgver=7.1
 pkgrel=101
 pkgdesc="AVRDUDE - AVR Downloader/UploaDEr"
-url="http://www.nongnu.org/avrdude/"
+url="https://github.com/avrdudes/avrdude"
 arch="all"
 license="GPL2+"
 depends="libftdi1 libusb-compat"
-makedepends="libtool automake autoconf m4 flex bison linux-headers libftdi1-dev libusb-compat-dev"
+makedepends="cmake flex bison linux-headers libftdi1-dev libusb-compat-dev"
 install=""
 subpackages="$pkgname-dev $pkgname-doc"
-source="http://download.savannah.gnu.org/releases/avrdude/$pkgname-$pkgver.tar.gz
-	avrdude-7.0-ftdi.patch
+source="$pkgname-$pkgver.tar.gz::https://github.com/avrdudes/avrdude/archive/refs/tags/v$pkgver.tar.gz
+	avrdude-7.1-ftdi.patch
 	"
-builddir="$srcdir/$pkgname-$pkgver"
 
 build() {
-	cd "$builddir"
-	libtoolize
-	aclocal
-	autoheader
-	automake -a -c
-	autoconf
-	./configure \
-		--build=$CBUILD \
-		--mandir=/usr/share/man \
-		--prefix=/usr \
-		--sysconfdir=/etc \
-		--enable-linuxgpio \
+	cmake -B build_linux \
+		-D CMAKE_BUILD_TYPE=MinSizeRel \
+		-D CMAKE_INSTALL_PREFIX=/usr \
+		-D CMAKE_INSTALL_SYSCONFDIR=/etc \
+		-D HAVE_LINUXGPIO=1 \
+		-D HAVE_LINUXSPI=1 \
 		|| return 1
-	make || return 1
+	cmake --build build_linux || return 1
 }
 
 package() {
-	cd "$builddir"
-	make DESTDIR="$pkgdir" install || return 1
+	DESTDIR="$pkgdir" cmake --install build_linux || return 1
 }
 
 sha512sums="
-891c435d8f6d4529762d647c468c52b4c04c3a663b703af0ddd2c284aecfce92ce99502aed77f409f1afb4ab7d4e05d85f26d03de3624c7c14fcbc852d988d53  avrdude-7.0.tar.gz
-9a15d7b3ada6cb32a1fcdb8c16ed1bc5d8630927016cf51b05400ff8ced7e13933428e438caaea5d97b1a6c18457aee4224792ce7b508462551e97568b045fc7  avrdude-7.0-ftdi.patch
+d372242cb6e97192eea3393c473754fd50b6260f6090be656412f959130e86a74edf0b33c73b528cf107936d747fd881a54e1d959f8b0945b288f79ff8411f27  avrdude-7.1.tar.gz
+461f47103d49e0923e1551fb51d2bf56004a9a4a30201f1fe593ebf98e45a1894bf9bdee6de255893efdf9b659a76e6593c22a75f02babd695dd5437687bb86e  avrdude-7.1-ftdi.patch
 "
