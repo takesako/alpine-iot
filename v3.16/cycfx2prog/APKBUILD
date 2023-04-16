@@ -1,0 +1,35 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=cycfx2prog
+pkgver=0.47
+pkgrel=0
+pkgdesc="download 8051 program into the FX2 board"
+url="https://www.triplespark.net/elec/periph/USB-FX2/software/"
+arch="all"
+license="GPL2"
+depends="libusb-compat"
+makedepends="libusb-compat-dev"
+install=""
+subpackages=""
+source="https://www.triplespark.net/elec/periph/USB-FX2/software/$pkgname-$pkgver.tar.gz
+	cycfx2prog-0.47-eeprom.patch"
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	make 
+}
+
+check() {
+	return 0
+}
+
+package() {
+	cd "$builddir"
+	install -D -m 755 cycfx2prog "$pkgdir"/usr/bin/cycfx2prog
+}
+
+sha512sums="
+089895f0c4b45012f9f9fc607a30c2e2897f360d270973354fa739cc456d2728080733461f6a3681422049599947461c05e5d9e7e598fc3c9fd6d5a7d89e346c  cycfx2prog-0.47.tar.gz
+e39dd9ed29e845f0d3a254654c67df0e6922884e36c600ea76b1a774c8f9388f15c266057826d8069315757fc9c4843ee1bc9fee1af1f2a5c090ed436ecb1a38  cycfx2prog-0.47-eeprom.patch
+"
