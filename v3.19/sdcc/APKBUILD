@@ -52,7 +52,7 @@ build() {
 		--enable-pdk15-port \
 		--enable-pdk16-port \
 		--enable-mos6502-port \
-		--enable-mos65c02-port \
+		--disable-mos65c02-port \
 		--enable-ucsim \
 		--enable-device-lib \
 		--enable-packihx \
@@ -63,6 +63,13 @@ build() {
 		--disable-doc \
 		--disable-libgc \
 		|| return 1
+		cd src; make SDCCy.h || return 1
+		cd hc08;       make -j1 ralloc2.o || return 1
+		cd ../mos6502; make -j1 ralloc2.o || return 1
+		cd ../pdk;     make -j1 ralloc2.o || return 1
+		cd ../stm8;    make -j1 ralloc2.o || return 1
+		cd ../z80;     make -j1 ralloc2.o || return 1
+		cd ../..
 		make || return 1
 }
 
