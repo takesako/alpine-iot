@@ -1,0 +1,47 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=micronucleus
+pkgver=2.6
+pkgrel=0
+pkgdesc="program upload tool for AVR ATtiny bootloader with minimal usb interface"
+url="https://github.com/micronucleus/micronucleus/"
+arch="all"
+license="GPL2+"
+depends="libusb-compat"
+makedepends="libusb-compat-dev ruby bash autoconf libtool linux-headers"
+install=""
+subpackages=""
+source="$pkgname-$pkgver.tar.gz::https://github.com/micronucleus/micronucleus/archive/refs/tags/v$pkgver.tar.gz
+	Makefile.in
+	configure.in
+	"
+builddir="$srcdir/$pkgname-$pkgver"
+options="!check"
+
+prepare() {
+	cp -p ../Makefile.in ../configure.in commandline/
+	echo '#define MICRONUCLEUS_COMMANDLINE_VERSION ("micronucleus-cli version: 2.6 from " __DATE__)' >> commandline/library/micronucleus_lib.h
+}
+
+build() {
+	cd "$builddir/commandline"
+	autoconf
+	cp -p /usr/share/libtool/build-aux/config.guess .
+	cp -p /usr/share/libtool/build-aux/config.sub .
+	./configure --build=$CBUILD --host=$CHOST || return 1
+	make || return 1
+}
+
+package() {
+	cd "$builddir"
+	mkdir -p "$pkgdir"/usr/share/$pkgname
+	install -D -m 644 -t "$pkgdir"/usr/share/$pkgname firmware/releases/*.hex
+	install -D -m 644 -t "$pkgdir"/usr/share/$pkgname firmware/upgrades/*.hex
+	install -D -m 755 commandline/micronucleus "$pkgdir"/usr/bin/micronucleus
+}
+
+sha512sums="
+d539d83562ab8765b819ce8f50bceb348379aa94d16aa75efd639a9c788aa5a6ce3acc05a9fe32272b1a46fd8c1abb3b24a18ef10c5b66ef33c3413a9cf9b8b6  micronucleus-2.6.tar.gz
+1ca39aa0c7909d47d2c0ddff8c0c2a822b9af70b53d110001c5d54cfd9b1efb6c1eb1e13a990ea3bb48040a3ae1ade5230e3f3c6e6e27e6c3205df0eca8110b9  Makefile.in
+03725614156e026719a5cde0e31b84fc1618b31f64a2601512da818db77dfaa2e42ce12037a3cb4f9b6eb04bf5f475b5590fdb0546814e0aa6f67c121e9da3fe  configure.in
+"
