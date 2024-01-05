@@ -1,16 +1,28 @@
 # alpine-iot
 Alpine Linux packages for IoT tools
 - apk binary packages
-  - http://10t.dev/alpine-iot/
+  - https://www.10t.dev/alpine-iot/
 - APKBUILD sources
-  - http://github.com/takesako/alpine-iot/
+  - https://github.com/takesako/alpine-iot/
 
 ## Provided apk packages (alpine-iot)
-1. open_jtalk (hts_engine, htsvoice-mei, mecab-naist-jdic) x86, x86_64, armhf
-2. avrdude (libftdi1) x86, x86_64, armhf
-3. avr-libc (binutils-avr, gcc-avr) x86, x86_64, armhf
-4. micronucleus (libusb-compat) x86, x86_64, armhf
-5. linux-iot (vallina-virt kernel with sound, usb-serial) x86, x86_64
+1. micronucleus (libusb-compat) x86_64, aarch64
+
+## How to apk add (for Alpine Linux users)
+### setup
+```
+echo "https://www.10t.dev/alpine-iot/v3.19" >> /etc/apk/repositories
+wget -P /etc/apk/keys https://www.10t.dev/alpine-iot/keys/takesako@namazu.org-587ad2bb.rsa.pub
+apk update
+```
+### install
+```
+apk add micronucleus
+```
+### setuid for libusb
+```
+chmod u+s /usr/bin/micronucleus
+```
 
 ## How to abuild (for alpine-iot maintainers)
 ### setup
@@ -31,6 +43,7 @@ abuild-keygen -a -i
 # ls -al ~/.abuild/
 # sudo cp -p ~/.abuild/*.pub /etc/apk/keys/
 ```
+
 ### build
 ```
 mkdir aports
@@ -51,27 +64,4 @@ cd v3.5
 # cd micronucleus; abuild checksum && abuild -r; cd ..
 # ...
 ```
-## How to apk add (for Alpine Linux users)
-### setup
-```
-echo "http://10t.dev/alpine-iot/v3.5" >> /etc/apk/repositories
-wget -P /etc/apk/keys http://10t.dev/alpine-iot/keys/takesako@namazu.org-587ad2bb.rsa.pub
-apk update
-```
-### install
-```
-apk add open_jtalk htsvoice-mei mecab-naist-jdic
-apk add avrdude micronucleus
-apk add avr-libc binutils-avr gcc-avr gcc-avr-dev
-```
-### setup rc.local
-```
-wget --no-check-certificate https://raw.githubusercontent.com/takesako/alpine-iot/master/tools/jtalk-etalk.sh
-sh jtalk-etalk.sh
-rm jtalk-etalk.sh
-```
-### setuid for libusb
-```
-chmod u+s /usr/bin/avrdude
-chmod u+s /usr/bin/micronucleus
-```
+

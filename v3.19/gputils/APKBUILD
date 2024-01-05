@@ -1,0 +1,41 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=gputils
+pkgver=1.5.2
+pkgrel=0
+pkgdesc="GNU PIC Utilities"
+url="https://sourceforge.net/projects/gputils/"
+arch="all"
+license="GPL2"
+depends=""
+makedepends=""
+checkdepends=""
+install=""
+subpackages=""
+source="https://downloads.sourceforge.net/$pkgname/$pkgver/$pkgname-$pkgver.tar.bz2"
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--disable-html-doc \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+	rm -rf "$pkgdir"/usr/share/man
+}
+
+sha512sums="
+43ed508d164152bf36e4f27b09656e6e3d58fc174806ad57d6415e6e2726a56381b1323be3acfc635f2a05babade695e9777b0db8b5f4b90da00b9d29e75eddc  gputils-1.5.2.tar.bz2
+"

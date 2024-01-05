@@ -1,0 +1,85 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=sdcc
+pkgver=4.3.0
+pkgrel=0
+pkgdesc="Small Device C Compiler for mcs51"
+url="https://sourceforge.net/projects/sdcc/"
+arch="all"
+license="GPL2"
+depends=""
+makedepends="bison flex boost-dev zlib-dev texinfo gputils"
+install=""
+subpackages="$pkgname-dev"
+source="https://downloads.sourceforge.net/$pkgname/$pkgver/$pkgname-src-$pkgver.tar.bz2"
+builddir="$srcdir/$pkgname-$pkgver"
+
+prepare() {
+	update_config_sub || return 1 
+}
+
+build() {
+	mkdir -p "$builddir/build"
+	cd "$builddir/build"
+	../configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--enable-avr-port \
+		--enable-gbz80-port \
+		--enable-mcs51-port \
+		--enable-z80-port \
+		--enable-z180-port \
+		--enable-r2k-port \
+		--enable-r2ka-port \
+		--enable-r3ka-port \
+		--enable-sm83-port \
+		--enable-tlcs90-port \
+		--enable-ez80_z80-port \
+		--enable-z80n-port \
+		--enable-ds390-port \
+		--enable-ds400-port \
+		--enable-pic14-port \
+		--enable-pic16-port \
+		--enable-hc08-port \
+		--enable-s08-port \
+		--enable-stm8-port \
+		--enable-pdk13-port \
+		--enable-pdk14-port \
+		--enable-pdk15-port \
+		--enable-pdk16-port \
+		--enable-mos6502-port \
+		--enable-mos65c02-port \
+		--enable-ucsim \
+		--enable-device-lib \
+		--enable-packihx \
+		--enable-sdcpp \
+		--enable-sdcdb \
+		--enable-sdbinutils \
+		--disable-non-free \
+		--disable-doc \
+		--disable-libgc \
+		|| return 1
+		make || return 1
+}
+
+check() {
+	cd "$builddir/build"
+	make check	
+}
+
+package() {
+	cd "$builddir/build"
+	mkdir -p "$pkgdir"
+	make DESTDIR="$pkgdir" install || return 1	
+	rm -rf "$pkgdir"/usr/share/doc
+	rm -rf "$pkgdir"/usr/share/man
+	rm -rf "$pkgdir"/usr/share/sdcc/lib/src
+}
+
+sha512sums="
+dabe276a0d2872bee2cdc14433f31a1e94153f9dce5a11add916ede2e76bfacf763be8e6d8134dc3aefdae29e38d3a7354626755e81e0f6db0e60c1798476f21  sdcc-src-4.3.0.tar.bz2
+"
