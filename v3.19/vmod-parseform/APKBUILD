@@ -14,6 +14,7 @@ subpackages=""
 source="lib$pkgname-$pkgver.tar.gz::https://github.com/xcir/libvmod-parseform/archive/v$pkgver.tar.gz
 	vmod_parseform.c.7.0.patch
 	configure.ac.patch
+	test.patch
 	"
 builddir="$srcdir/lib$pkgname-$pkgver"
 
@@ -43,4 +44,5 @@ sha512sums="
 3c5025411eab3ab482931476e5eac511362eb719fbe9956891cae09b78488cd81ae7a6a84a8f0d7b44fe45e9dd5d48fbfa9710221380495dca4657725d9805a7  libvmod-parseform-62.6.tar.gz
 8879af993525645368666709186190552eb7ff8f192fa408396bcd7ff194cea83b83f962b985f17aa49635b4ffcf457b55b437bb439823cdf6b11979182842c5  vmod_parseform.c.7.0.patch
 0a95dcf4e5527b45c02d259e6f3ef50a2b26bc3adaa308d61ee12becb12e77db89bb5cf6e2b0428ba7f67ffe12cd5f39662f42458612a194f0253710465b8b0d  configure.ac.patch
+cc2a391ae7e8c61159c15cb8f3a663df64d8aa948d1397307c9b8248b607862aeafc4b0478147ef060922744d716cefa443bc27be6581cf7e19f8367efe83454  test.patch
 "

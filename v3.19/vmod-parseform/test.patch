@@ -1,0 +1,8 @@
+--- old/src/tests/test04.vtc.orig
++++ old/src/tests/test04.vtc
+@@ -7 +7 @@
+-       expect req.http.d1 == "%a %b %%%"
++       expect req.http.d1 == "%"
+@@ -24 +24 @@
+-		set req.http.d1 = parseform.urldecode("%a+%b%20%%%");
++		set req.http.d1 = parseform.urldecode("%");
