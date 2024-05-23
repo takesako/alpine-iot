@@ -1,0 +1,15 @@
+--- libvmod-parseform-62.6-old/configure.ac	2019-03-20 08:07:58.000000000 +0000
++++ libvmod-parseform-62.6/configure.ac	2022-04-19 01:59:03.703557653 +0000
+@@ -22,11 +22,11 @@
+ AC_ARG_WITH([rst2man],
+ 	AS_HELP_STRING(
+ 		[--with-rst2man=PATH],
+ 		[Location of rst2man (auto)]),
+ 	[RST2MAN="$withval"],
+-	AC_CHECK_PROGS(RST2MAN, [rst2man rst2man.py], []))
++	[AC_CHECK_PROGS(RST2MAN, [rst2man rst2man.py], [])])
+ 
+ m4_ifndef([VARNISH_PREREQ], AC_MSG_ERROR([Need varnish.m4 -- see README.rst]))
+ 
+ #VARNISH_PREREQ([5.0], [5.1])
+ VARNISH_VMODS([parseform])
