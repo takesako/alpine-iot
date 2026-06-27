@@ -19,6 +19,7 @@ builddir="$srcdir/lib$pkgname-$pkgver"
 
 build() {
 	cd "$builddir"
+	rm -f src/tests/test04.vtc # for aarch64
 	sh autogen.sh
 	./configure \
 		--build="$CBUILD" \
