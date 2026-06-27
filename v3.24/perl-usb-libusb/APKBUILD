@@ -1,0 +1,36 @@
+# Contributor: Yoshinori Takesako <takesako@namazu.org>
+# Maintainer: Yoshinori Takesako <takesako@namazu.org>
+pkgname=perl-usb-libusb
+_realname=USB-LibUSB
+pkgver=0.09
+pkgrel=0
+pkgdesc="USB::LibUSB - Perl interface to libusb-1.0 API"
+url="http://metacpan.org/pod/USB::LibUSB/"
+arch="all"
+license="GPL PerlArtistic"
+depends="perl perl-moo"
+makedepends="perl-dev libusb-dev"
+install=
+subpackages="$pkgname-doc"
+source="https://cpan.metacpan.org/authors/id/A/AM/AMBA/$_realname-$pkgver.tar.gz"
+options="!check"
+
+_builddir="$srcdir/$_realname-$pkgver"
+
+build() {
+	cd $_builddir
+	PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor || return 1
+	make || return 1
+}
+
+package() {
+	cd $_builddir
+	make DESTDIR="$pkgdir" install
+	# creates file collision among perl modules
+	find "$pkgdir" -name perllocal.pod -delete
+
+}
+
+sha512sums="
+97b2316ba71c509ed268777e212c27cb18b0fe3151cd7a4e6d4e67fd8983cc1b8db727d028459aff8b60c67ccee5a7ef5769d5e0caa98a890f45a7e2a0199b06  USB-LibUSB-0.09.tar.gz
+"

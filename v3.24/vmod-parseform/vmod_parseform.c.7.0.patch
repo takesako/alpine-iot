@@ -1,0 +1,98 @@
+--- 6.2/src/vmod_parseform.c	2019-03-20 08:07:58.000000000 +0000
++++ 7.0/src/vmod_parseform.c	2022-04-19 02:22:31.460914746 +0000
+@@ -59,7 +59,7 @@
+ 	unsigned   u;
+ 	char       *rpp, *rp;
+ 	const char *p;
+-	u = WS_Reserve(ctx->ws, 0);
++	u = WS_ReserveAll(ctx->ws);
+ 	rpp = rp = ctx->ws->f;
+ 	
+ 
+@@ -102,7 +102,7 @@
+ 	AN(p);
+ 	memset(p, 0, sizeof *p);
+ 	
+-	u = WS_Reserve(ctx->ws, 0);
++	u = WS_ReserveAll(ctx->ws);
+ 	rpp = rp = ctx->ws->f;
+ 	last = txt + strlen(txt);
+ 	ssize_t bodylen;
+@@ -183,10 +183,11 @@
+ 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
+ 	CHECK_OBJ_NOTNULL(ctx->req, REQ_MAGIC);
+ 
+-	l = VRB_Iterate(ctx->req, IterCopyReqBody, (void*)vsb);
++	// l = VRB_Iterate(ctx->req, IterCopyReqBody, (void*)vsb);
++	l = VRB_Iterate(ctx->req->wrk, ctx->vsl, ctx->req, IterCopyReqBody, vsb);
+ 	VSB_finish(vsb);
+ 	if (l < 0) {
+-		VSB_delete(vsb);
++		VSB_fini(vsb);
+ 		VSLb(ctx->vsl, SLT_VCL_Error,
+ 		    "Iteration on req.body didn't succeed.");
+ 		return;
+@@ -214,7 +215,7 @@
+ 	glen   = strlen(glue);
+ 	keylen = strlen(key);
+ 	
+-	u = WS_Reserve(ctx->ws, 0);
++	u = WS_ReserveAll(ctx->ws);
+ 	rpp = rp = ctx->ws->f;
+ 	
+ 	while(1){
+@@ -299,7 +300,7 @@
+ 	keylen = strlen(key);
+ 	glen   = strlen(glue);
+ 
+-	u   = WS_Reserve(ctx->ws, 0);
++	u   = WS_ReserveAll(ctx->ws);
+ 	rpp = rp = ctx->ws->f;
+ 
+ 	while(1){
+@@ -370,7 +371,7 @@
+ 	last   = porg + VSB_len(vsb);
+ 	keylen = strlen(key);
+ 	
+-	u      = WS_Reserve(ctx->ws, 0);
++	u      = WS_ReserveAll(ctx->ws);
+ 	rpp    = rp = ctx->ws->f;
+ 	
+ 	
+@@ -439,18 +440,24 @@
+ 	return (0);
+ }
+ 
+-static void vmod_free(void *priv){
++static void vmod_free(VRT_CTX, void *priv){
+ 	struct vmod_priv_parseform *tmp = priv;
+-	VSB_delete(tmp->vsb);
++	VSB_destroy(&tmp->vsb);
+ 	FREE_OBJ(tmp);
+ }
+ 
++static const struct vmod_priv_methods mymethods[1] = {{
++        .magic = VMOD_PRIV_METHODS_MAGIC,
++        .type = "mystate",
++        .fini = vmod_free
++}};
++
+ void getbody(VRT_CTX, struct vmod_priv **priv){
+ 	struct vmod_priv_parseform *tmp;
+ 	ALLOC_OBJ(tmp,VMOD_PRIV_PARSEFORM_MAGIC);
+ 	(*priv)->priv = tmp;
+ 	tmp->vsb=VSB_new_auto();
+-	(*priv)->free = vmod_free;
++	(*priv)->methods = mymethods;
+ 	VRB_Blob(ctx, tmp->vsb);
+ }
+ 
+@@ -459,7 +466,7 @@
+ vmod_get_blob(VRT_CTX, struct vmod_priv *priv, VCL_STRING key, VCL_STRING glue, VCL_BOOL decode)
+ {
+ 
+-	if (ctx->req->req_body_status != REQ_BODY_CACHED) {
++	if (ctx->req->req_body_status != BS_CACHED) {
+ 		VSLb(ctx->vsl, SLT_VCL_Error,
+ 		   "Unbuffered req.body");
+ 		struct vrt_blob *nr = NULL;
