@@ -26,7 +26,6 @@ build() {
 		--with-rst2man=/usr/bin/rst2man \
 		--disable-dependency-tracking
 	make
-	rmdir ../../tmp
 }
 
 check() {
